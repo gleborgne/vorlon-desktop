@@ -4,6 +4,7 @@
 // window from here.
 
 var app = require('app');
+var ipc = require('ipc');
 
 var childProcess = require('child_process');
 var kill = require('tree-kill');
@@ -45,34 +46,33 @@ app.on('ready', function () {
         mainWindow.maximize();
     }
 
-    if (env.name === 'test') {
+    if (env && env.name === 'test') {
         mainWindow.loadUrl('file://' + __dirname + '/spec.html');
     } else {
         mainWindow.loadUrl('file://' + __dirname + '/app.html');
     }
 
-    if (env.name !== 'production') {
+    if (!env || env.name !== 'production') {
         devHelper.setDevMenu();
-        mainWindow.openDevTools();
+        //mainWindow.openDevTools();
     }
 
     mainWindow.on('close', function () {
         mainWindowState.saveState(mainWindow);
     });
 
-    setTimeout(function(){
-    	//console.log("yipi");
-    	//runVorlon();
-    	startVorlonProcess();
-    	setTimeout(function(){
-    		//mainWindow.loadUrl('http://localhost:1337');
-    		openDashboardWindow();
-    	}, 2000);
-    }, 1000);
+    startVorlonProcess();
 });
 
 app.on('window-all-closed', function () {
     app.quit();
+});
+
+ipc.on("opendashboard", function(event, arg){
+	console.log("receive opendashboard for " + arg);
+	if(arg && arg.sessionid){
+		openDashboardWindow(arg.sessionid);
+	}
 });
 
 function openDashboardWindow(sessionid){
@@ -84,8 +84,14 @@ function openDashboardWindow(sessionid){
         height: mainWindowState.height,
         "node-integration": false  
     });
-    console.log("create dashboard window for " + sessionid)
-	dashboardwdw.loadUrl('http://localhost:1337/dashboard/' + sessionid);
+    console.log("create dashboard window for " + sessionid);
+    
+    //load empty page first to prevent bad window title
+    dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
+    setTimeout(function(){
+		dashboardwdw.loadUrl('http://localhost:1337/dashboard/' + sessionid);
+	}, 500);
+
 	dashboardWindows.push(dashboardwdw);
 	dashboardwdw.on('close', function () {
         var idx = dashboardWindows.indexOf(dashboardwdw);

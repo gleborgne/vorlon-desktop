@@ -102,6 +102,12 @@ var lessTask = function () {
 gulp.task('less', ['clean'], lessTask);
 gulp.task('less-watch', lessTask);
 
+var devlessTask = function () {
+    return gulp.src(['app/**/*.less'],  {base : '.'} )
+    .pipe(less())
+    .pipe(gulp.dest(''));
+};
+gulp.task('dev-less', devlessTask);
 
 gulp.task('finalize', ['clean'], function () {
     var manifest = srcDir.read('package.json', 'json');
@@ -130,5 +136,13 @@ gulp.task('watch', function () {
     gulp.watch('app/**/*.less', ['less-watch']);
 });
 
+gulp.task('dev-watch', function () {
+    //gulp.watch('app/**/*.js', ['bundle-watch']);
+    //gulp.watch(paths.copyFromAppDir, { cwd: 'app' }, ['copy-watch']);
+    gulp.watch('app/**/*.less', ['dev-less']);
+});
+
 
 gulp.task('build', ['bundle', 'less', 'copy', 'finalize']);
+
+gulp.task('devbuild', ['dev-less']);

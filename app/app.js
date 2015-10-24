@@ -1,25 +1,59 @@
 // Here is the starting point for code of your own application.
 // All stuff below is just to show you how it works. You can delete all of it.
 
-// Modules which you authored in this project are intended to be
-// imported through new ES6 syntax.
-import { greet } from './hello_world/hello_world';
-
 // Node.js modules and those from npm
 // are required the same way as always.
 var os = require('os');
+var ipc = require('ipc');
+var jquery = require('jquery');
 var app = require('remote').require('app');
 var jetpack = require('fs-jetpack').cwd(app.getAppPath());
+var shell = require('shell');
 
 // Holy crap! This is browser window with HTML and stuff, but I can read
 // here files like it is node.js! Welcome to Electron world :)
 console.log(jetpack.read('package.json', 'json'));
 
 // window.env contains data from config/env_XXX.json file.
-var envName = window.env.name;
+var envName = "DEV";
+if (window.env){
+    envName = window.env.name;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('greet').innerHTML = greet();
-    document.getElementById('platform-info').innerHTML = os.platform();
-    document.getElementById('env-name').innerHTML = envName;
+    var txtSessionId = document.getElementById('vorlonsessionid');
+    document.getElementById('btnopendashboard').onclick = function(){
+      var sessionid = txtSessionId.value;
+      if (sessionid && sessionid.length){
+        console.log("send command opendashboard " + sessionid);
+        ipc.send("opendashboard", { sessionid : sessionid });
+      }
+    };   
+    
+    var txtProxyTarget = document.getElementById('vorlonproxytarget');
+    document.getElementById('btnopenproxy').onclick = function(){
+      var targeturl = txtProxyTarget.value;
+      if (targeturl && targeturl.length){
+        console.log("request data for proxying " + targeturl);
+        getProxyData(targeturl, function(data){
+            console.log(data);
+            if (data){                
+                ipc.send("opendashboard", { sessionid : data.session });
+                setTimeout(function() {
+                    shell.openExternal(data.url);    
+                }, 500);                
+            }            
+        });        
+      }
+    };    
 });
+
+function getProxyData(url, callback){
+   jquery.ajax({
+        type: "GET",
+        url: "http://localhost:1337/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
+        success: function (data) {
+          callback(JSON.parse(data));
+        },
+   });
+}

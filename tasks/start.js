@@ -31,6 +31,25 @@ var runBuild = function () {
     return deferred.promise;
 };
 
+
+var runDevBuild = function () {
+    var deferred = Q.defer();
+
+    var build = childProcess.spawn(gulpPath, [
+        'devbuild',
+        '--env=' + utils.getEnvName(),
+        '--color'
+    ], {
+        stdio: 'inherit'
+    });
+
+    build.on('close', function (code) {
+        deferred.resolve();
+    });
+
+    return deferred.promise;
+};
+
 var runGulpWatch = function () {
     watch = childProcess.spawn(gulpPath, [
         'watch',
@@ -47,22 +66,43 @@ var runGulpWatch = function () {
     });
 };
 
+var runDevWatch = function () {
+    watch = childProcess.spawn(gulpPath, [
+        'dev-watch',
+        '--env=' + utils.getEnvName(),
+        '--color'
+    ], {
+        stdio: 'inherit'
+    });
+
+    watch.on('close', function (code) {
+        // Gulp watch exits when error occured during build.
+        // Just respawn it then.
+        runDevWatch();
+    });
+};
+
 var runApp = function () {
-    var app = childProcess.spawn(electron, ['./build'], {
+    var app = childProcess.spawn(electron, ['./app'], {
         stdio: 'inherit'
     });
 
     app.on('close', function (code) {
         console.log("EXITED WITH CODE " + code);
-        // User closed the app. Kill the host process.
-        kill(watch.pid, 'SIGKILL', function () {
+        if (watch){
+            // User closed the app. Kill the host process.
+            kill(watch.pid, 'SIGKILL', function () {
+                process.exit();
+            });
+        }else{
             process.exit();
-        });
+        }
     });
 };
 
-runBuild()
+runDevBuild()
 .then(function () {
-    runGulpWatch();
+    runDevWatch();
     runApp();
 });
+
