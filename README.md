@@ -7,13 +7,13 @@ The project has been initiated from [Electron boilerplate](https://github.com/sz
 To run this from source, you will need Node.js, so just make sure you have it installed.
 
 Grab the sources and then open a command prompt for
-
+```
 npm install
-
+```
 When everything is in place, run the following command :
-
+```
 npm start
-
+```
 
 # License
 
