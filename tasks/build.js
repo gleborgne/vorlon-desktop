@@ -97,9 +97,9 @@ gulp.task('bundle-watch', bundleTask);
 
 
 var lessTask = function () {
-    return gulp.src('app/stylesheets/main.less')
+    return gulp.src(['app/**/*.less'])
     .pipe(less())
-    .pipe(gulp.dest(destDir.path('stylesheets')));
+    .pipe(gulp.dest("build"));
 };
 gulp.task('less', ['clean'], lessTask);
 gulp.task('less-watch', lessTask);
