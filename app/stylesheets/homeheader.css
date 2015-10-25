@@ -1,0 +1,353 @@
+.site-header {
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  background: #1f1c28;
+  background-image: url(../assets/header-stars.png), url(../assets/header-stars-distant.png);
+  background-repeat: repeat;
+  background-position: center center;
+  background-size: auto 400px;
+  color: white;
+}
+.site-header .container {
+  height: 100%;
+  background-image: url(../assets/header-planet-large.png), url(../assets/header-planet-medium.png), url(../assets/header-planet-small.png);
+  background-repeat: no-repeat;
+  background-size: 180px auto, 90px auto, 66px auto;
+  background-position: right 120%, 80% 10%, 20% 30%;
+}
+.site-header .tube {
+  position: absolute;
+  top: 0;
+  background-repeat: no-repeat;
+  z-index: 4;
+}
+.site-header .tube .data {
+  width: 20px;
+  height: 20px;
+  background: url(../assets/header-tube-data.png);
+  background-size: contain;
+  border-radius: 50%;
+  position: absolute;
+  top: -20px;
+  opacity: .5;
+}
+.site-header .tube-left {
+  width: 150px;
+  height: 400px;
+  left: 10%;
+  background-image: url(../assets/header-tube-3.png);
+  background-size: auto 400px;
+}
+.site-header .tube-left .data {
+  animation: data1 8s 2s linear infinite;
+}
+.site-header .tube-top {
+  width: 280px;
+  height: 200px;
+  left: 26%;
+  background-image: url(../assets/header-tube-2.png);
+  background-size: 280px auto;
+  background-position: left -8%;
+}
+.site-header .tube-top .data {
+  animation: data2 8s 6s linear infinite;
+}
+.site-header .tube-right {
+  width: 400px;
+  height: 400px;
+  right: 5%;
+  background-image: url(../assets/header-tube-1.png);
+  background-size: auto 400px;
+  background-position: right center;
+}
+.site-header .tube-right .data {
+  animation: data3 8s 4s linear infinite;
+}
+.site-header .satellite {
+  width: 92px;
+  height: 92px;
+  position: absolute;
+  left: 10%;
+  bottom: 10%;
+  background: url(../assets/header-satellite.png) no-repeat center center;
+  background-size: contain;
+  z-index: 3;
+}
+.site-header .logo {
+  width: 395px;
+  height: 110px;
+  margin: 0 auto;
+  position: absolute;
+  top: 37%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: url(../assets/header-pixel-logo-text.svg) no-repeat center center;
+  background-size: contain;
+  text-indent: -9999em;
+}
+.site-header .logo .legend {
+  color: rgba(255, 255, 255, 0.6);
+  text-indent: 0;
+  text-align: center;
+  margin-top: 100px;
+  background-color: #411748;
+  font-size: 24pt;
+}
+.site-header .logo .spaceship,
+.site-header .logo .exhaust {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+.site-header .logo .spaceship {
+  width: 86px;
+  height: 46px;
+  left: 67%;
+  top: -55px;
+  background-image: url(../assets/header-pixel-logo-spaceship.svg);
+  animation: spaceship 4s ease-out;
+}
+.site-header .logo .exhaust {
+  width: 64px;
+  height: 34px;
+  right: 64px;
+  top: 6px;
+  background-image: url(../assets/header-pixel-logo-exhaust.svg);
+  animation: exhaust 4s ease;
+}
+@media screen and (max-width: 900px) {
+  .site-header {
+    height: 350px;
+  }
+  .site-header .tube-left {
+    left: 5%;
+  }
+  .site-header .tube-top {
+    top: -5%;
+    left: 15%;
+  }
+  .site-header .tube-right {
+    right: -75px;
+  }
+  .site-header .satellite {
+    display: none;
+  }
+  .site-header .logo {
+    height: 140px;
+    top: 28%;
+    background-image: url(../assets/vorlon-pixel-logo-large.svg);
+  }
+  .site-header .logo .spaceship {
+    display: none;
+  }
+  .site-header .logo .legend {
+    margin-top: 130px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .site-header {
+    height: 250px;
+  }
+  .site-header .container {
+    background-position: 120% 140%, 85% -10px, 10% 10%;
+  }
+  .site-header .tube {
+    top: -35%;
+  }
+  .site-header .tube-left {
+    left: 2%;
+  }
+  .site-header .tube-top {
+    display: none;
+  }
+  .site-header .logo {
+    height: 120px;
+    top: 16%;
+  }
+  .site-header .logo .legend {
+    margin-top: 110px;
+    font-size: 18pt;
+  }
+}
+@media screen and (max-width: 480px) {
+  .site-header {
+    height: 200px;
+  }
+  .site-header .container {
+    background-position: 120% 400%, 85% -50px, -5% 5%;
+  }
+  .site-header .tube {
+    display: none;
+  }
+  .site-header .logo {
+    height: 100px;
+  }
+  .site-header .logo .legend {
+    margin-top: 90px;
+    font-size: 18pt;
+  }
+}
+@keyframes spaceship {
+  0% {
+    left: 5%;
+    top: -55px;
+  }
+  20% {
+    top: -50px;
+  }
+  40% {
+    top: -55px;
+  }
+  60% {
+    top: -47px;
+  }
+  80% {
+    top: -51px;
+  }
+  100% {
+    left: 67%;
+    top: -55px;
+  }
+}
+@keyframes exhaust {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    margin-right: 0;
+    margin-top: 0;
+  }
+  27% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0;
+    margin-right: 20px;
+    margin-top: 5px;
+  }
+  75% {
+    opacity: 0;
+    margin-right: 0;
+    margin-top: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes data1 {
+  0% {
+    top: -20px;
+    left: 8px;
+  }
+  15% {
+    top: 120px;
+    left: 8px;
+  }
+  30% {
+    top: 265px;
+    left: 75px;
+  }
+  45% {
+    top: 400px;
+    left: 75px;
+  }
+  100% {
+    top: 400px;
+    left: 10px;
+  }
+}
+@keyframes data2 {
+  0% {
+    top: -28px;
+    left: 8px;
+  }
+  3.0578118439665722% {
+    top: -8px;
+    left: 8px;
+  }
+  6.1156236879331445% {
+    top: 12px;
+    left: 8px;
+  }
+  8.86765434750306% {
+    top: 30px;
+    left: 8px;
+  }
+  11.723886320011895% {
+    top: 48px;
+    left: 13px;
+  }
+  14.057659923338075% {
+    top: 61px;
+    left: 21px;
+  }
+  16.43607936284551% {
+    top: 72px;
+    left: 32px;
+  }
+  19.587999666830232% {
+    top: 77px;
+    left: 52px;
+  }
+  21.90165415677704% {
+    top: 80px;
+    left: 67px;
+  }
+  42.08379144967832% {
+    top: 80px;
+    left: 199px;
+  }
+  46.01459638426888% {
+    top: 74px;
+    left: 224px;
+  }
+  48.61822935052951% {
+    top: 63px;
+    left: 237px;
+  }
+  50.66947189418348% {
+    top: 51px;
+    left: 243px;
+  }
+  53.062588195113115% {
+    top: 37px;
+    left: 250px;
+  }
+  55.35594707808804% {
+    top: 22px;
+    left: 250px;
+  }
+  59.94266484403791% {
+    top: -8px;
+    left: 250px;
+  }
+  63.00047668800448% {
+    top: -28px;
+    left: 250px;
+  }
+  100% {
+    top: -28px;
+    left: 8px;
+  }
+}
+@keyframes data3 {
+  0% {
+    top: -20px;
+    right: 10px;
+  }
+  50% {
+    top: 400px;
+    right: 10px;
+  }
+  100% {
+    top: 400px;
+    right: 10px;
+  }
+}

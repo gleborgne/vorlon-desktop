@@ -8,6 +8,7 @@ body {
 }
 a {
   text-decoration: none;
+  color: #007ca7;
 }
 h1,
 h2,
@@ -16,6 +17,7 @@ h4,
 h5,
 h6 {
   font-family: Oswald;
+  color: #411748;
 }
 .landingpage {
   background-color: #DDD;
@@ -24,23 +26,65 @@ h6 {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.landingpage .container {
-  background-color: white;
-  border: 1px solid #AAA;
-  width: 800px;
-  max-width: 90%;
-  margin: auto;
-  margin-top: 40px;
+.landingpage .pagecontainer .content {
   padding: 40px;
   box-sizing: border-box;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
 }
-.landingpage .container .vorlonlogo {
-  text-align: center;
-}
-.landingpage .container .vorlonlogo img {
+.landingpage .pagecontainer .content .contentbloc {
+  margin: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: white;
+  border: 1px solid #AAA;
+  width: 400px;
   max-width: 100%;
-  max-height: 140px;
+  height: 220px;
+}
+.landingpage .pagecontainer .content .contentbloc input,
+.landingpage .pagecontainer .content .contentbloc button {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.landingpage .pagecontainer .content .contentbloc button {
+  margin-top: 10px;
+  background-color: #6b2d81;
+  border: none;
+  padding: 0.4em 1em;
+  color: white;
 }
 .subtitle {
   color: gray;
+}
+@media screen and (max-width: 940px) {
+  .landingpage .pagecontainer .content {
+    padding: 20px;
+  }
+  .landingpage .pagecontainer .content .contentbloc {
+    width: 100%;
+    height: auto;
+  }
+}
+@media screen and (max-width: 600px) {
+  .landingpage .pagecontainer .content {
+    padding: 10px;
+  }
+  .landingpage .pagecontainer .content .contentbloc {
+    width: 100%;
+    height: auto;
+  }
+}
+@media screen and (max-width: 480px) {
+  .landingpage .pagecontainer .content {
+    padding: 5px;
+  }
+  .landingpage .pagecontainer .content .contentbloc {
+    margin: 5px;
+    width: 100%;
+    height: auto;
+  }
 }

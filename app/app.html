@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Vorlon.js desktop</title>
@@ -7,29 +8,66 @@
     <link href="./fonts/roboto/roboto.css" rel="stylesheet" type="text/css">
     <link href="./fonts/oswald/oswald.css" rel="stylesheet" type="text/css">
     <link href="./stylesheets/main.css" rel="stylesheet" type="text/css">
-    
+    <link href="./stylesheets/homeheader.css" rel="stylesheet" type="text/css">
+
     <script src="vendor/electron_boilerplate/env_config.js"></script>
     <script src="vendor/electron_boilerplate/context_menu.js"></script>
     <script src="vendor/electron_boilerplate/external_links.js"></script>
 
     <script src="app.js"></script>
 </head>
+
 <body class="landingpage">
 
-    <div class="container">
-        <div class="vorlonlogo">
-            <img src="./vorlon/public/images/vorlonlogo_pixel_large.svg" />
-        </div>
-        <h1>Vorlon.js desktop</h1>
-        <h3>Open dashboard for a specific session</h3>
-        <p>
-            <input type="text" id="vorlonsessionid"><button id="btnopendashboard">Open dashboard !</button>
-        </p>
-        <h3>Start Vorlon on an existing website with Vorlon proxy</h3>
-        <p>
-            <input type="text" id="vorlonproxytarget"><button id="btnopenproxy">Open website and dashboard</button>
-        </p>
+    <div class="pagecontainer">
+        <header class="site-header">
+            <div class="container">
+                <div class="logo">Vorlon.JS
+                    <div class="spaceship">
+                        <div class="exhaust"></div>
+                    </div>
+                    <div class="legend">
+                        DESKTOP
+                    </div>
+                </div>
+                <div class="tube tube-left">
+                    <div class="data"></div>
+                </div>
+                <div class="tube tube-top">
+                    <div class="data"></div>
+                </div>
+                <div class="tube tube-right">
+                    <div class="data"></div>
+                </div>
+                <div class="planets"></div>
+            </div>
+            <div class="satellite"></div>
+        </header>
+        <section class="content">
+            <div class="contentbloc">
+                <h3>Open dashboard for a specific session</h3>
+                <p>
+                    <input type="text" id="vorlonsessionid" placeholder="enter vorlon session id here">
+                    <button id="btnopendashboard">Open dashboard session</button>
+                </p>    
+            </div>
+            
+            <div class="contentbloc">
+                <h3>Inspect existing website with Vorlon proxy</h3>
+                <p>
+                    <input type="text" id="vorlonproxytarget" placeholder="enter the target url here">
+                    <button id="btnopenproxy">Open website and dashboard</button>
+                </p>
+            </div>
+            <div class="contentbloc">
+                <h3>learn more...</h3>
+                <p>
+                    Visit <a href="http://www.vorlonjs.com" class="js-external-link">Vorlon.js website</a> to learn more and check documentation
+                </p>
+            </div>
+        </section>
     </div>
 
 </body>
+
 </html>
