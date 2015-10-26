@@ -39,10 +39,10 @@ var VORLON;
                         plugin: 6
                     },
                     transports: [
-                        new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level })
+                        //new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level })
                     ],
                     exceptionHandlers: [
-                        new winston.transports.File({ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
+                        //new winston.transports.File({ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
                     ],
                     exitOnError: false
                 });

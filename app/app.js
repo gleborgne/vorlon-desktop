@@ -16,44 +16,73 @@ console.log(jetpack.read('package.json', 'json'));
 
 // window.env contains data from config/env_XXX.json file.
 var envName = "DEV";
-if (window.env){
+var statusText = null, btnStart = null, btnStop = null;
+
+if (window.env) {
     envName = window.env.name;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var txtSessionId = document.getElementById('vorlonsessionid');
-    document.getElementById('btnopendashboard').onclick = function(){
-      var sessionid = txtSessionId.value;
-      if (sessionid && sessionid.length){
-        console.log("send command opendashboard " + sessionid);
-        ipc.send("opendashboard", { sessionid : sessionid });
-      }
-    };   
-    
+    document.getElementById('btnopendashboard').onclick = function () {
+        var sessionid = txtSessionId.value;
+        if (sessionid && sessionid.length) {
+            console.log("send command opendashboard " + sessionid);
+            ipc.send("opendashboard", { sessionid: sessionid });
+        }
+    };
+
     var txtProxyTarget = document.getElementById('vorlonproxytarget');
-    document.getElementById('btnopenproxy').onclick = function(){
-      var targeturl = txtProxyTarget.value;
-      if (targeturl && targeturl.length){
-        console.log("request data for proxying " + targeturl);
-        getProxyData(targeturl, function(data){
-            console.log(data);
-            if (data){                
-                ipc.send("opendashboard", { sessionid : data.session });
-                setTimeout(function() {
-                    shell.openExternal(data.url);    
-                }, 500);                
-            }            
-        });        
-      }
-    };    
+    document.getElementById('btnopenproxy').onclick = function () {
+        var targeturl = txtProxyTarget.value;
+        if (targeturl && targeturl.length) {
+            console.log("request data for proxying " + targeturl);
+            getProxyData(targeturl, function (data) {
+                console.log(data);
+                if (data) {
+                    ipc.send("opendashboard", { sessionid: data.session });
+                    setTimeout(function () {
+                        shell.openExternal(data.url);
+                    }, 500);
+                }
+            });
+        }
+    };
+
+    ipc.send('getVorlonStatus');
+
+    statusText = document.getElementById('vorlonServerStatus');
+    btnStart = document.getElementById('btnStartServer');
+    btnStart.onclick = function(){
+        ipc.send("startVorlon");
+    }
+    btnStop = document.getElementById('btnStopServer');
+    btnStop.onclick = function(){
+        ipc.send("stopVorlon");
+    }
 });
 
-function getProxyData(url, callback){
-   jquery.ajax({
+ipc.on("vorlonStatus", function (args) {
+    console.log("receive status", args);
+    if (statusText){
+        if (args.running) {
+            statusText.innerHTML = "VORLON server is running";
+            btnStart.style.display = "none";
+            btnStop.style.display = "";
+        } else {
+            statusText.innerHTML = "VORLON server is NOT running";
+            btnStart.style.display = "";
+            btnStop.style.display = "none";
+        }
+    }
+})
+
+function getProxyData(url, callback) {
+    jquery.ajax({
         type: "GET",
         url: "http://localhost:1337/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
         success: function (data) {
-          callback(JSON.parse(data));
+            callback(JSON.parse(data));
         },
-   });
+    });
 }
