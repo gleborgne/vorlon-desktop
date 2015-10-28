@@ -3,12 +3,10 @@ var path = require("path");
 var stylus = require("stylus");
 var fs = require("fs");
 var vauth = require("./vorlon.authentication");
-var httpConfig = require("../config/vorlon.httpconfig");
-var baseURLConfig = require("../config/vorlon.baseurlconfig");
 var VORLON;
 (function (VORLON) {
     var WebServer = (function () {
-        function WebServer() {
+        function WebServer(context) {
             this._bodyParser = require("body-parser");
             this._cookieParser = require("cookie-parser");
             this._methodOverride = require("method-override");
@@ -20,8 +18,9 @@ var VORLON;
             this._twitterStrategy = require("passport-twitter");
             this._app = express();
             this._components = new Array();
-            this.http = new httpConfig.VORLON.HttpConfig();
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
+            this.httpConfig = context.httpConfig;
+            this.baseURLConfig = context.baseURLConfig;
+            this._log = context.logger;
         }
         WebServer.prototype.init = function () {
             for (var id in this._components) {
@@ -40,6 +39,7 @@ var VORLON;
             configurable: true
         });
         WebServer.prototype.start = function () {
+            var _this = this;
             var app = this._app;
             //Command line
             var stopExecution = false;
@@ -53,7 +53,7 @@ var VORLON;
                                 return;
                             }
                             var _package = JSON.parse(packageData.replace(/^\uFEFF/, ''));
-                            console.log('Vorlon.js v' + _package.version);
+                            _this._log.info('Vorlon.js v' + _package.version);
                         });
                         stopExecution = true;
                         break;
@@ -63,7 +63,7 @@ var VORLON;
                 return;
             }
             //Sets
-            app.set('port', this.http.port);
+            app.set('port', this.httpConfig.port);
             app.set('views', path.join(__dirname, '../views'));
             app.set('view engine', 'jade');
             //Uses
@@ -103,24 +103,24 @@ var VORLON;
                 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                 next();
             });
-            if (this.http.useSSL) {
-                this.http.httpModule = this.http.httpModule.createServer(this.http.options, app).listen(app.get('port'), function () {
-                    console.log('Vorlon.js SERVER with SSL listening on port ' + app.get('port'));
+            if (this.httpConfig.useSSL) {
+                this._httpServer = this.httpConfig.httpModule.createServer(this.httpConfig.options, app).listen(app.get('port'), function () {
+                    _this._log.info('Vorlon.js SERVER with SSL listening on port ' + app.get('port'));
                 });
             }
             else {
-                this.http.httpModule = this.http.httpModule.createServer(app).listen(app.get('port'), function () {
-                    console.log('Vorlon.js SERVER listening on port ' + app.get('port'));
+                this._httpServer = this.httpConfig.httpModule.createServer(app).listen(app.get('port'), function () {
+                    _this._log.info('Vorlon.js SERVER listening on port ' + app.get('port'));
                 });
             }
             for (var id in this._components) {
                 var component = this._components[id];
-                component.start(this.http.httpModule);
+                component.start(this._httpServer);
             }
         };
         Object.defineProperty(WebServer.prototype, "httpServer", {
             get: function () {
-                return this.http.httpModule;
+                return this._httpServer;
             },
             enumerable: true,
             configurable: true

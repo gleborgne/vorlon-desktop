@@ -31,7 +31,7 @@ var VORLON;
                     message.passed = details.passed;
                     message.total = details.total;
                     message.runtime = details.runtime;
-                    this.sendCommandToDashboard(message);
+                    _this.sendToDashboard(message);
                 });
                 QUnit.done(function (details) {
                     //console.log("QUnit.done");
@@ -42,24 +42,26 @@ var VORLON;
                     message.passed = details.passed;
                     message.total = details.total;
                     message.runtime = details.runtime;
-                    this.sendCommandToDashboard("done", self.getID(), message);
+                    _this.sendToDashboard(message);
                 });
             });
         };
         UnitTestRunnerClient.prototype.refresh = function () {
         };
+        UnitTestRunnerClient.prototype.runTest = function (testContent) {
+            eval(testContent);
+        };
         UnitTestRunnerClient.prototype.onRealtimeMessageReceivedFromDashboardSide = function (receivedObject) {
-            //console.log("onRealtimeMessageReceivedFromDashboardSide");
-            //console.log(receivedObject);
-            switch (receivedObject.commandType) {
-                case "runTest":
-                    eval(receivedObject.testContent);
-                    break;
-            }
         };
         return UnitTestRunnerClient;
     })(VORLON.ClientPlugin);
     VORLON.UnitTestRunnerClient = UnitTestRunnerClient;
+    UnitTestRunnerClient.prototype.ClientCommands = {
+        runTest: function (data) {
+            var plugin = this;
+            plugin.runTest(data);
+        }
+    };
     //Register the plugin with vorlon core 
     VORLON.Core.RegisterClientPlugin(new UnitTestRunnerClient());
 })(VORLON || (VORLON = {}));

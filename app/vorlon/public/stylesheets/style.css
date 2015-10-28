@@ -163,6 +163,12 @@ a {
   color: #007ca7;
   text-decoration: none;
 }
+.waitLoader {
+  transform: scale(1.5);
+}
+.waitLoader.hidden {
+  display: none;
+}
 .cf:before,
 .cf:after {
   content: " ";

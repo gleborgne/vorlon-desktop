@@ -1,98 +1,34 @@
 var redis = require("redis");
-var winston = require("winston");
 var socketio = require("socket.io");
 var fs = require("fs");
 var path = require("path");
 var fakeredis = require("fakeredis");
-var winstonDisplay = require("winston-logs-display");
-var redisConfigImport = require("../config/vorlon.redisconfig");
-var redisConfig = redisConfigImport.VORLON.RedisConfig;
-var httpConfig = require("../config/vorlon.httpconfig");
-var logConfig = require("../config/vorlon.logconfig");
-var baseURLConfig = require("../config/vorlon.baseurlconfig");
 var tools = require("./vorlon.tools");
 var VORLON;
 (function (VORLON) {
     var Server = (function () {
-        function Server() {
+        function Server(context) {
             this.sessions = new Array();
             this.dashboards = new Array();
-            this.logConfig = new logConfig.VORLON.LogConfig();
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
-            console.log("create Vorlon server parts");
-            console.log(this.logConfig);
-            console.log(this.baseURLConfig);
-
-            this.winstonlogs = false;
-
-            if (true /*this.winstonlogs*/){
-                //LOGS      
-                winston.cli();
-                this._log = new winston.Logger({
-                    levels: {
-                        info: 0,
-                        warn: 1,
-                        error: 2,
-                        verbose: 3,
-                        api: 4,
-                        dashboard: 5,
-                        plugin: 6
-                    },
-                    transports: [
-                        //new winston.transports.File({ filename: this.logConfig.vorlonLogFile, level: this.logConfig.level })
-                    ],
-                    exceptionHandlers: [
-                        //new winston.transports.File({ filename: this.logConfig.exceptionsLogFile, timestamp: true, maxsize: 1000000 })
-                    ],
-                    exitOnError: false
-                });
-                if (this.logConfig.enableConsole) {
-                    this._log.add(winston.transports.Console, {
-                        level: this.logConfig.level,
-                        handleExceptions: true,
-                        json: false,
-                        timestamp: function () {
-                            var date = new Date();
-                            return date.getFullYear() + "-" +
-                                date.getMonth() + "-" +
-                                date.getDate() + " " +
-                                date.getHours() + ":" +
-                                date.getMinutes() + ":" +
-                                date.getSeconds();
-                        },
-                        colorize: true
-                    });
-                }
-                winston.addColors({
-                    info: 'green',
-                    warn: 'cyan',
-                    error: 'red',
-                    verbose: 'blue',
-                    api: 'gray',
-                    dashboard: 'pink',
-                    plugin: 'yellow'
-                });
-                this._log.cli();
-            }
+            this.baseURLConfig = context.baseURLConfig;
+            this.httpConfig = context.httpConfig;
+            this.redisConfig = context.redisConfig;
+            this._log = context.logger;
             //Redis
-            if (redisConfig.fackredis === true) {
+            if (this.redisConfig.fackredis === true) {
                 this._redisApi = fakeredis.createClient();
             }
             else {
-                this._redisApi = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-                this._redisApi.auth(redisConfig._redisPassword, function (err) {
+                this._redisApi = redis.createClient(this.redisConfig._redisPort, this.redisConfig._redisMachine);
+                this._redisApi.auth(this.redisConfig._redisPassword, function (err) {
                     if (err) {
                         throw err;
                     }
                 });
             }
-            //SSL
-            this.http = new httpConfig.VORLON.HttpConfig();
         }
         Server.prototype.addRoutes = function (app, passport) {
             var _this = this;
-            console.log("adding SERVER routes");
-
             app.get(this.baseURLConfig.baseURL + "/api/createsession", function (req, res) {
                 _this.json(res, _this.guid());
             });
@@ -120,7 +56,7 @@ var VORLON;
                             nbClients++;
                         }
                     }
-                    _this._log.info("API : GetClients nb client " + nbClients + " in session " + req.params.idSession, { type: "API", session: req.params.idSession });
+                    _this._log.debug("API : GetClients nb client " + nbClients + " in session " + req.params.idSession, { type: "API", session: req.params.idSession });
                 }
                 else {
                     _this._log.warn("API : No client in session " + req.params.idSession, { type: "API", session: req.params.idSession });
@@ -133,19 +69,19 @@ var VORLON;
             });
             app.get(this.baseURLConfig.baseURL + "/api/range/:idsession/:idplugin/:from/:to", function (req, res) {
                 _this._redisApi.lrange(req.params.idsession + req.params.idplugin, req.params.from, req.params.to, function (err, reply) {
-                    _this._log.info("API : Get Range data from : " + req.params.from + " to " + req.params.to + " = " + reply, { type: "API", session: req.params.idsession });
+                    _this._log.debug("API : Get Range data from : " + req.params.from + " to " + req.params.to + " = " + reply, { type: "API", session: req.params.idsession });
                     _this.json(res, reply);
                 });
             });
             app.post(this.baseURLConfig.baseURL + "/api/push", function (req, res) {
                 var receiveMessage = req.body;
-                _this._log.info("API : Receve data to log : " + JSON.stringify(req.body), { type: "API", session: receiveMessage._idsession });
+                _this._log.debug("API : Receve data to log : " + JSON.stringify(req.body), { type: "API", session: receiveMessage._idsession });
                 _this._redisApi.rpush([receiveMessage._idsession + receiveMessage.id, receiveMessage.message], function (err) {
                     if (err) {
                         _this._log.error("API : Error data log : " + err, { type: "API", session: receiveMessage._idsession });
                     }
                     else {
-                        _this._log.info("API : Push data ok", { type: "API", session: receiveMessage._idsession });
+                        _this._log.debug("API : Push data ok", { type: "API", session: receiveMessage._idsession });
                     }
                 });
                 _this.json(res, {});
@@ -171,11 +107,6 @@ var VORLON;
             app.get(this.baseURLConfig.baseURL + "/config.json", function (req, res) {
                 _this._sendConfigJson(req, res);
             });
-            console.log("SERVER Routes done...");
-            if (this.winstonlogs){
-                //DisplayLogs
-                winstonDisplay(app, this._log);
-            }
         };
         Server.prototype._sendConfigJson = function (req, res) {
             var _this = this;
@@ -238,10 +169,10 @@ var VORLON;
                         }
                     }
                 }
-                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + _this.http.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
+                vorlonpluginfiles = vorlonpluginfiles.replace('"vorlon/plugins"', '"' + _this.httpConfig.protocol + '://' + req.headers.host + baseUrl + '/vorlon/plugins"');
                 javascriptFile += "\r" + vorlonpluginfiles;
                 if (autostart) {
-                    javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + _this.http.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
+                    javascriptFile += "\r (function() { VORLON.Core.StartClientSide('" + _this.httpConfig.protocol + "://" + req.headers.host + "/', '" + req.params.idsession + "'); }());";
                 }
                 res.header('Content-Type', 'application/javascript');
                 res.send(javascriptFile);
@@ -249,25 +180,18 @@ var VORLON;
         };
         Server.prototype.start = function (httpServer) {
             var _this = this;
-
-            console.log("starting VORLON server websocket");
             //SOCKET.IO
             var io = socketio(httpServer);
             this._io = io;
-
-            console.log("check redis");
             //Redis
-            var redisConfig = redisConfigImport.VORLON.RedisConfig;
-            if (redisConfig.fackredis === false) {
-                var pub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-                pub.auth(redisConfig._redisPassword);
-                var sub = redis.createClient(redisConfig._redisPort, redisConfig._redisMachine);
-                sub.auth(redisConfig._redisPassword);
+            if (this.redisConfig.fackredis === false) {
+                var pub = redis.createClient(this.redisConfig._redisPort, this.redisConfig._redisMachine);
+                pub.auth(this.redisConfig._redisPassword);
+                var sub = redis.createClient(this.redisConfig._redisPort, this.redisConfig._redisMachine);
+                sub.auth(this.redisConfig._redisPassword);
                 var socketredis = require("socket.io-redis");
                 io.adapter(socketredis({ pubClient: pub, subClient: sub }));
             }
-
-            console.log("start listening sockets");
             //Listen on /
             io.on("connection", function (socket) {
                 _this.addClient(socket);
@@ -319,11 +243,11 @@ var VORLON;
                 if (client == undefined) {
                     var client = new Client(metadata.clientId, data.ua, socket, ++session.nbClients);
                     session.connectedClients[metadata.clientId] = client;
-                    _this._log.info(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
+                    _this._log.debug(formatLog("PLUGIN", "Send Add Client to dashboard (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
                     if (dashboard != undefined) {
                         dashboard.emit("addclient", client.data);
                     }
-                    _this._log.info(formatLog("PLUGIN", "New client (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
+                    _this._log.debug(formatLog("PLUGIN", "New client (" + client.displayId + ")[" + data.ua + "] socketid = " + socket.id, receiveMessage));
                 }
                 else {
                     client.socket = socket;
@@ -331,16 +255,15 @@ var VORLON;
                     if (dashboard != undefined) {
                         dashboard.emit("addclient", client.data);
                     }
-                    _this._log.info(formatLog("PLUGIN", "Client Reconnect (" + client.displayId + ")[" + data.ua + "] socketid=" + socket.id, receiveMessage));
+                    _this._log.debug(formatLog("PLUGIN", "Client Reconnect (" + client.displayId + ")[" + data.ua + "] socketid=" + socket.id, receiveMessage));
                 }
-                _this._log.info(formatLog("PLUGIN", "Number clients in session : " + (session.nbClients + 1), receiveMessage));
+                _this._log.debug(formatLog("PLUGIN", "Number clients in session : " + (session.nbClients + 1), receiveMessage));
                 //If dashboard already connected to this socket send "helo" else wait
                 if ((metadata.clientId != "") && (metadata.clientId == session.currentClientId)) {
-                    _this._log.info(formatLog("PLUGIN", "Send helo to client to open socket : " + metadata.clientId, receiveMessage));
-                    socket.emit("helo", metadata.clientId);
+                    _this._log.debug(formatLog("PLUGIN", "Send helo to client to open socket : " + metadata.clientId, receiveMessage));
                 }
                 else {
-                    _this._log.info(formatLog("PLUGIN", "New client (" + client.displayId + ") wait...", receiveMessage));
+                    _this._log.debug(formatLog("PLUGIN", "New client (" + client.displayId + ") wait...", receiveMessage));
                 }
             });
             socket.on("message", function (message) {
@@ -355,7 +278,7 @@ var VORLON;
                         //Send message if _clientID = clientID selected by dashboard
                         if (session && receiveMessage.metadata.clientId === session.currentClientId) {
                             dashboard.emit("message", message);
-                            _this._log.info(formatLog("PLUGIN", "PLUGIN=>DASHBOARD", receiveMessage));
+                            _this._log.debug(formatLog("PLUGIN", "PLUGIN=>DASHBOARD", receiveMessage));
                         }
                         else {
                             _this._log.error(formatLog("PLUGIN", "must be disconnected", receiveMessage));
@@ -374,13 +297,13 @@ var VORLON;
                         if (receiveMessage.data.socketid === _this.sessions[session].connectedClients[client].socket.id) {
                             _this.sessions[session].connectedClients[client].opened = false;
                             if (_this.dashboards[session]) {
-                                _this._log.info(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));
+                                _this._log.debug(formatLog("PLUGIN", "Send RemoveClient to Dashboard " + socket.id, receiveMessage));
                                 _this.dashboards[session].emit("removeclient", _this.sessions[session].connectedClients[client].data);
                             }
                             else {
-                                _this._log.info(formatLog("PLUGIN", "NOT sending RefreshClients, no Dashboard " + socket.id, receiveMessage));
+                                _this._log.debug(formatLog("PLUGIN", "NOT sending RefreshClients, no Dashboard " + socket.id, receiveMessage));
                             }
-                            _this._log.info(formatLog("PLUGIN", "Client Close " + socket.id, receiveMessage));
+                            _this._log.debug(formatLog("PLUGIN", "Client Close " + socket.id, receiveMessage));
                         }
                     }
                 }
@@ -394,39 +317,39 @@ var VORLON;
                 var metadata = receiveMessage.metadata;
                 var dashboard = _this.dashboards[metadata.sessionId];
                 if (dashboard == null) {
-                    _this._log.info(formatLog("DASHBOARD", "New Dashboard", receiveMessage));
+                    _this._log.debug(formatLog("DASHBOARD", "New Dashboard", receiveMessage));
                 }
                 else {
-                    _this._log.info(formatLog("DASHBOARD", "Reconnect", receiveMessage));
+                    _this._log.debug(formatLog("DASHBOARD", "Reconnect", receiveMessage));
                 }
                 _this.dashboards[metadata.sessionId] = socket;
                 dashboard = socket;
                 //if client listen by dashboard send helo to selected client
                 if (metadata.listenClientId !== "") {
-                    _this._log.info(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
+                    _this._log.debug(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
                     var session = _this.sessions[metadata.sessionId];
                     if (session != undefined) {
-                        _this._log.info(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
+                        _this._log.debug(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
                         session.currentClientId = metadata.listenClientId;
                         for (var clientId in session.connectedClients) {
                             var client = session.connectedClients[clientId];
                             if (client.clientId === metadata.listenClientId) {
                                 if (client.socket != null) {
-                                    _this._log.info(formatLog("DASHBOARD", "Send helo to socketid :" + client.socket.id, receiveMessage));
+                                    _this._log.debug(formatLog("DASHBOARD", "Send helo to socketid :" + client.socket.id, receiveMessage));
                                     client.socket.emit("helo", metadata.listenClientId);
                                 }
                             }
                             else {
-                                _this._log.info(formatLog("DASHBOARD", "Wait for socketid (" + client.socket.id + ")", receiveMessage));
+                                _this._log.debug(formatLog("DASHBOARD", "Wait for socketid (" + client.socket.id + ")", receiveMessage));
                             }
                         }
                         //Send Helo to DashBoard
-                        _this._log.info(formatLog("DASHBOARD", "Send helo to Dashboard", receiveMessage));
+                        _this._log.debug(formatLog("DASHBOARD", "Send helo to Dashboard", receiveMessage));
                         socket.emit("helo", metadata.listenClientId);
                     }
                 }
                 else {
-                    _this._log.info(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                    _this._log.debug(formatLog("DASHBOARD", "No client selected for this dashboard"));
                 }
             });
             socket.on("reload", function (message) {
@@ -435,27 +358,27 @@ var VORLON;
                 var metadata = receiveMessage.metadata;
                 //if client listen by dashboard send reload to selected client
                 if (metadata.listenClientId !== "") {
-                    _this._log.info(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
+                    _this._log.debug(formatLog("DASHBOARD", "Client selected for :" + metadata.listenClientId, receiveMessage));
                     var session = _this.sessions[metadata.sessionId];
                     if (session != undefined) {
-                        _this._log.info(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
+                        _this._log.debug(formatLog("DASHBOARD", "Change currentClient " + metadata.clientId, receiveMessage));
                         session.currentClientId = metadata.listenClientId;
                         for (var clientId in session.connectedClients) {
                             var client = session.connectedClients[clientId];
                             if (client.clientId === metadata.listenClientId) {
                                 if (client.socket != null) {
-                                    _this._log.info(formatLog("DASHBOARD", "Send reload to socketid :" + client.socket.id, receiveMessage));
+                                    _this._log.debug(formatLog("DASHBOARD", "Send reload to socketid :" + client.socket.id, receiveMessage));
                                     client.socket.emit("reload", metadata.listenClientId);
                                 }
                             }
                             else {
-                                _this._log.info(formatLog("DASHBOARD", "Wait for socketid (" + client.socket.id + ")", receiveMessage));
+                                _this._log.debug(formatLog("DASHBOARD", "Wait for socketid (" + client.socket.id + ")", receiveMessage));
                             }
                         }
                     }
                 }
                 else {
-                    _this._log.info(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                    _this._log.debug(formatLog("DASHBOARD", "No client selected for this dashboard"));
                 }
             });
             socket.on("protocol", function (message) {
@@ -468,14 +391,14 @@ var VORLON;
                 }
                 else {
                     dashboard.emit("message", message);
-                    _this._log.info(formatLog("DASHBOARD", "Dashboard send message", receiveMessage));
+                    _this._log.debug(formatLog("DASHBOARD", "Dashboard send message", receiveMessage));
                 }
             });
             socket.on("identify", function (message) {
                 //this._log.warn("DASHBOARD identify " + message);
                 var receiveMessage = JSON.parse(message);
                 var metadata = receiveMessage.metadata;
-                _this._log.info(formatLog("DASHBOARD", "Identify clients", receiveMessage));
+                _this._log.debug(formatLog("DASHBOARD", "Identify clients", receiveMessage));
                 var session = _this.sessions[metadata.sessionId];
                 if (session != null) {
                     var nbClients = 0;
@@ -483,11 +406,11 @@ var VORLON;
                         var currentclient = session.connectedClients[client];
                         if (currentclient.opened) {
                             currentclient.socket.emit("identify", currentclient.displayId);
-                            _this._log.info(formatLog("DASHBOARD", "Dashboard send identify " + currentclient.displayId + " to socketid : " + currentclient.socket.id, receiveMessage));
+                            _this._log.debug(formatLog("DASHBOARD", "Dashboard send identify " + currentclient.displayId + " to socketid : " + currentclient.socket.id, receiveMessage));
                             nbClients++;
                         }
                     }
-                    _this._log.info(formatLog("DASHBOARD", "Send " + session.nbClients + " identify(s)", receiveMessage));
+                    _this._log.debug(formatLog("DASHBOARD", "Send " + session.nbClients + " identify(s)", receiveMessage));
                 }
                 else {
                     _this._log.error(formatLog("DASHBOARD", " No client to identify...", receiveMessage));
@@ -503,7 +426,7 @@ var VORLON;
                         var client = arrayClients.connectedClients[clientId];
                         if (metadata.listenClientId === client.clientId) {
                             client.socket.emit("message", message);
-                            _this._log.info(formatLog("DASHBOARD", "DASHBOARD=>PLUGIN", receiveMessage));
+                            _this._log.debug(formatLog("DASHBOARD", "DASHBOARD=>PLUGIN", receiveMessage));
                         }
                     }
                 }
@@ -517,7 +440,7 @@ var VORLON;
                 for (var dashboard in _this.dashboards) {
                     if (_this.dashboards[dashboard].id === socket.id) {
                         delete _this.dashboards[dashboard];
-                        _this._log.info(formatLog("DASHBOARD", "Delete dashboard " + dashboard + " socket " + socket.id));
+                        _this._log.debug(formatLog("DASHBOARD", "Delete dashboard " + dashboard + " socket " + socket.id));
                     }
                 }
                 //Send disconnect to all client

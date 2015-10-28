@@ -2,11 +2,11 @@ var VORLON;
 (function (VORLON) {
     var RedisConfig = (function () {
         function RedisConfig() {
+            this.fackredis = true;
+            this._redisPort = 6379;
+            this._redisMachine = "";
+            this._redisPassword = "";
         }
-        RedisConfig.fackredis = true;
-        RedisConfig._redisPort = 6379;
-        RedisConfig._redisMachine = "";
-        RedisConfig._redisPassword = "";
         return RedisConfig;
     })();
     VORLON.RedisConfig = RedisConfig;

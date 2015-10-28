@@ -59,12 +59,7 @@ var VORLON;
                 };
                 _this._txtRunTest = VORLON.Tools.QuerySelectorById(div, "txtRunTest");
                 _this._btnRunTest.addEventListener("run", function () {
-                    var message = {};
-                    message.commandType = "runTest";
-                    message.testContent = _this._txtRunTest.value;
-                    //console.log("runTest");
-                    //console.log(message);
-                    _this.sendCommandToClient(message);
+                    _this.sendCommandToClient("runTest", _this._txtRunTest.value);
                 });
                 _this._containerList = VORLON.Tools.QuerySelectorById(div, "testResultsList");
                 _this._containerSummary = VORLON.Tools.QuerySelectorById(div, "testResultsSummary");

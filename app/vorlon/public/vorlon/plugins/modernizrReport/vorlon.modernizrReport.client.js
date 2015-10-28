@@ -15,8 +15,6 @@ var VORLON;
             //this.debug = true;
         }
         ModernizrReportClient.prototype.startClientSide = function () {
-        };
-        ModernizrReportClient.prototype.whenDOMReady = function () {
             this.loadModernizrFeatures();
         };
         ModernizrReportClient.prototype.loadModernizrFeatures = function () {

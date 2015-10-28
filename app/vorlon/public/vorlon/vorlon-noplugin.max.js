@@ -1105,7 +1105,6 @@ var VORLON;
             _super.call(this, name);
         }
         ClientPlugin.prototype.startClientSide = function () { };
-        ClientPlugin.prototype.whenDOMReady = function () { };
         ClientPlugin.prototype.onRealtimeMessageReceivedFromDashboardSide = function (receivedObject) { };
         ClientPlugin.prototype.sendToDashboard = function (data) {
             if (VORLON.Core.Messenger)
@@ -1137,13 +1136,13 @@ var VORLON;
                 var first = document.getElementsByTagName('script')[0];
                 first.parentNode.insertBefore(scriptToLoad, first);
             }
-            if (!waitForDOMContentLoaded || this.domReady) {
+            if (!waitForDOMContentLoaded || document.body) {
                 loadScript();
             }
             else {
-                setTimeout(function () {
+                document.addEventListener("DOMContentLoaded", function () {
                     _this._loadNewScriptAsync(scriptName, callback, waitForDOMContentLoaded);
-                }, 100);
+                });
             }
         };
         return ClientPlugin;
@@ -1519,13 +1518,6 @@ var VORLON;
                 var plugin = VORLON.Core._clientPlugins[index];
                 plugin.startClientSide();
             }
-            document.addEventListener("DOMContentLoaded", function () {
-                for (var index = 0; index < VORLON.Core._clientPlugins.length; index++) {
-                    var plugin = VORLON.Core._clientPlugins[index];
-                    plugin.domReady = true;
-                    plugin.whenDOMReady();
-                }
-            });
             // Handle client disconnect
             window.addEventListener("beforeunload", function () {
                 VORLON.Core.Messenger.sendRealtimeMessage("", { socketid: VORLON.Core.Messenger.socketId }, VORLON.Core._side, "clientclosed");

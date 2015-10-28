@@ -149,6 +149,10 @@ var VORLON;
             this.sendCommandToDashboard('entries', { entries: currentPendings });
         };
         InteractiveConsoleClient.prototype.batchSend = function (items) {
+            if (this._pendingEntriesTimeout) {
+                clearTimeout(this._pendingEntriesTimeout);
+                this._pendingEntriesTimeout = null;
+            }
             var batch = [];
             for (var i = 0, l = items.length; i < l; i++) {
                 if (batch.length < this._maxBatchSize) {
@@ -243,9 +247,9 @@ var VORLON;
         };
         InteractiveConsoleClient.prototype.refresh = function () {
             var _this = this;
-            this.sendCommandToDashboard("clear");
             //delay sending cache to dashboard to let other plugins load...
             setTimeout(function () {
+                _this.sendCommandToDashboard("clear");
                 _this.batchSend(_this._cache);
             }, 300);
         };

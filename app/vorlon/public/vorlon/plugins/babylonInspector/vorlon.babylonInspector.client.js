@@ -708,7 +708,7 @@ var VORLON;
         /**
          * Start the clientside code : initilization etc
          */
-        BabylonInspectorClient.prototype.whenDOMReady = function () {
+        BabylonInspectorClient.prototype.startClientSide = function () {
             if (!BABYLON.Engine.isSupported()) {
             }
             else {

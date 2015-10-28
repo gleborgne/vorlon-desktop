@@ -27,6 +27,8 @@ var config = new vorlonhttpConfig.VORLON.HttpConfig();
 var mainWindow;
 var vorlonServerProcess = null;
 var dashboardWindows = [];
+var errors = [];
+var messages = [];
 
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
@@ -96,7 +98,9 @@ ipc.on("getVorlonStatus", function (event, arg) {
 
 function sendVorlonStatus(event, arg){
     var msg = {
-        running : vorlonServerProcess != null
+        running : vorlonServerProcess != null,
+        errors : errors,
+        messages : messages
     };
     
     if (event){
@@ -145,36 +149,31 @@ function startVorlonProcess() {
         console.log("starting silent " + scriptpath);
         var vorlon = childProcess.fork(scriptpath, [], { silent: true });
         //var vorlon = childProcess.spawn('node', [scriptpath], {});
+        errors = [];
+        messages = [];
         
         vorlonServerProcess = vorlon;
         vorlon.on('error', function (data) {
+            errors.push(data);
             console.log('stderr: ' + data);
         });
 
         vorlon.on('message', function (m) {
-            console.log("message: " + m);
+            if (m.message){
+                messages.push(m.message)
+            }
+            if (m.error){
+                errors.push(m.error);
+            }
+            //console.log("message:", m);
         });
 
         vorlon.on('data', function (m) {
             console.log("data: " + m);
         });
 
-        if (vorlon.stdout) {
-            console.info("process has stdout");
-            vorlon.stdin.on("data", function (data) {
-                console.log("received stdin data");
-            });
-
-            vorlon.stdout.on("data", function (data) {
-                console.log("received data");
-                if (data) {
-                    console.log("FORWARD " + data.toString());
-                }
-            });
-        }
-
-        vorlon.on('close', function (code) {            
-            console.log("VORLON CLOSED WITH CODE " + code);
+        vorlon.on('close', function (code, arg) {            
+            console.log("VORLON CLOSED WITH CODE " + code, arg);
             stopVorlonProcess();
         });
         sendVorlonStatus();
@@ -187,29 +186,5 @@ function stopVorlonProcess() {
             vorlonServerProcess = null;
             sendVorlonStatus();
         });
-    }
-}
-
-function runVorlon() {
-    try {
-        console.log("electron building vorlon server");
-        //WEBSERVER
-        var webServer = new vorlonWebserver.VORLON.WebServer();
-        //DASHBOARD
-        var dashboard = new vorlonDashboard.VORLON.Dashboard();
-        //VORLON SERVER
-        var server = new vorlonServer.VORLON.Server();
-        //VORLON HTTPPROXY
-        //var HttpProxy = new vorlonHttpProxy.VORLON.HttpProxy(false);
-
-        webServer.components.push(dashboard);
-        webServer.components.push(server);
-        //webServer.components.push(HttpProxy);
-
-        console.log("electron starting vorlon server");
-        webServer.start();
-        console.log("electron vorlon server ready");
-    } catch (exception) {
-        console.error(exception);
     }
 }

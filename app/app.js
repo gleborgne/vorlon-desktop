@@ -16,7 +16,7 @@ console.log(jetpack.read('package.json', 'json'));
 
 // window.env contains data from config/env_XXX.json file.
 var envName = "DEV";
-var statusText = null, btnStart = null, btnStop = null;
+var statusText = null, btnStart = null, btnStop = null, errorscontainer=null, messagescontainer=null;
 
 if (window.env) {
     envName = window.env.name;
@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     ipc.send('getVorlonStatus');
-
+    errorscontainer = document.getElementById('vorlonerrors');
+    messagescontainer = document.getElementById('vorlonmessages');
     statusText = document.getElementById('vorlonServerStatus');
     btnStart = document.getElementById('btnStartServer');
     btnStart.onclick = function(){
@@ -73,6 +74,30 @@ ipc.on("vorlonStatus", function (args) {
             statusText.innerHTML = "VORLON server is NOT running";
             btnStart.style.display = "";
             btnStop.style.display = "none";
+        }
+        
+        if (args.errors && args.errors.length){
+            errorscontainer.innerHTML = "";
+            args.errors.forEach(function(err){
+                var e = document.createElement("DIV");
+                e.className  ="error";
+                e.innerText = JSON.stringify(err);
+                errorscontainer.appendChild(e);
+            })
+        }else{
+            errorscontainer.innerHTML = "no errors";   
+        }
+        
+        if (args.messages && args.messages.length){
+            messagescontainer.innerHTML = "";
+            args.messages.forEach(function(err){
+                var e = document.createElement("DIV");
+                e.className  ="error";
+                e.innerText = JSON.stringify(err);
+                messagescontainer.appendChild(e);
+            })
+        }else{
+            messagescontainer.innerHTML = "no message";   
         }
     }
 })

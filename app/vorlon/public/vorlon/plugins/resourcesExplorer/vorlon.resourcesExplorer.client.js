@@ -8,6 +8,7 @@ var VORLON;
     var ResourcesExplorerClient = (function (_super) {
         __extends(ResourcesExplorerClient, _super);
         function ResourcesExplorerClient() {
+            var _this = this;
             _super.call(this, "resourcesExplorer");
             this.localStorageList = [];
             this.sessionStorageList = [];
@@ -15,6 +16,9 @@ var VORLON;
             this._ready = true;
             this._id = "RESOURCES";
             //this.debug = true;
+            window.addEventListener("load", function () {
+                _this.sendClientData();
+            });
         }
         ResourcesExplorerClient.prototype.sendClientData = function () {
             // LOCAL STORAGE
@@ -39,12 +43,6 @@ var VORLON;
             message.sessionStorageList = this.sessionStorageList;
             message.cookiesList = this.cookiesList;
             this.sendCommandToDashboard("resourceitems", message);
-        };
-        ResourcesExplorerClient.prototype.whenDOMReady = function () {
-            var that = this;
-            window.addEventListener("load", function () {
-                that.sendClientData();
-            });
         };
         ResourcesExplorerClient.prototype.refresh = function () {
             this.sendClientData();

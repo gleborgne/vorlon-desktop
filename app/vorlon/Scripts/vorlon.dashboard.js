@@ -2,12 +2,11 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var fs = require("fs");
 var path = require("path");
 var vauth = require("./vorlon.authentication");
-var baseURLConfig = require("../config/vorlon.baseurlconfig");
 var VORLON;
 (function (VORLON) {
     var Dashboard = (function () {
-        function Dashboard() {
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
+        function Dashboard(context) {
+            this.baseURLConfig = context.baseURLConfig;
         }
         Dashboard.prototype.addRoutes = function (app, passport) {
             app.route(this.baseURLConfig.baseURL + '/').get(vauth.VORLON.Authentication.ensureAuthenticated, this.defaultDashboard());
@@ -42,7 +41,7 @@ var VORLON;
                 if (catalog.activateAuth) {
                     authent = catalog.activateAuth;
                 }
-                console.log("dashboard authent " + authent);
+                
                 res.render('dashboard', { baseURL: _this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent });
             };
         };
@@ -56,7 +55,6 @@ var VORLON;
             res.render('getsession', { title: 'Get Session' });
         };
         Dashboard.prototype.login = function (req, res) {
-            this.baseURLConfig = new baseURLConfig.VORLON.BaseURLConfig();
             res.render('login', { baseURL: this.baseURLConfig.baseURL, message: 'Please login' });
         };
         Dashboard.prototype.logout = function (req, res) {

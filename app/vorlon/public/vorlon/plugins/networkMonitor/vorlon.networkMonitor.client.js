@@ -44,10 +44,6 @@ var VORLON;
             message.entries = this.performanceItems;
             this.sendCommandToDashboard("performanceItems", message);
         };
-        NetworkMonitorClient.prototype.whenDOMReady = function () {
-            var that = this;
-            that.sendClientData();
-        };
         NetworkMonitorClient.prototype.refresh = function () {
             this.sendClientData();
         };
