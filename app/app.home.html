@@ -1,0 +1,50 @@
+<header class="site-header">
+    <div class="container">
+        <div class="logo">Vorlon.JS
+            <div class="spaceship">
+                <div class="exhaust"></div>
+            </div>
+            <div class="legend">
+                DESKTOP
+            </div>
+        </div>
+        <div class="tube tube-left">
+            <div class="data"></div>
+        </div>
+        <div class="tube tube-top">
+            <div class="data"></div>
+        </div>
+        <div class="tube tube-right">
+            <div class="data"></div>
+        </div>
+        <div class="planets"></div>
+    </div>
+    <div class="satellite"></div>
+</header>
+<section class="content">
+    <div class="contentbloc">
+        <h3>Open dashboard for a specific session</h3>
+        <p>
+            <input type="text" id="vorlonsessionid" placeholder="enter vorlon session id here">
+            <button id="btnopendashboard">Open dashboard session</button>
+        </p>
+    </div>
+
+    <div class="contentbloc">
+        <h3>Inspect existing website with Vorlon proxy</h3>
+        <p>
+            <input type="text" id="vorlonproxytarget" placeholder="enter the target url here">
+            <button id="btnopenproxy">Open website and dashboard</button>
+        </p>
+    </div>
+    <div class="contentbloc">
+        <h3>status</h3>
+        <p id="vorlonServerStatus">
+            server is not running
+        </p>
+        <p>
+            <button id="btnStartServer" style="display:none">Start VORLON</button>
+            <button id="btnStopServer" style="display:none">Stop VORLON</button>
+        </p>
+    </div>
+</section>

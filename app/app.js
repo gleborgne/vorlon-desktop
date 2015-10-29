@@ -9,58 +9,47 @@ var $ = require('jquery');
 var app = require('remote').require('app');
 var jetpack = require('fs-jetpack').cwd(app.getAppPath());
 var shell = require('shell');
-
+var HomePanel = require('./app.home.js').HomePanel;
+var ConsolePanel = require('./app.console.js').ConsolePanel;
+var SettingsPanel = require('./app.settings.js').SettingsPanel;
+var InfoPanel = require('./app.info.js').InfoPanel;
+var homepanel = null, consolepanel = null, settingspanel = null, infopanel = null;
 // Holy crap! This is browser window with HTML and stuff, but I can read
 // here files like it is node.js! Welcome to Electron world :)
 console.log(jetpack.read('package.json', 'json'));
 
 // window.env contains data from config/env_XXX.json file.
 var envName = "DEV";
-var statusText = null, btnStart = null, btnStop = null, errorscontainer = null, messagescontainer = null;
 
 if (window.env) {
     envName = window.env.name;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    var txtSessionId = document.getElementById('vorlonsessionid');
-    document.getElementById('btnopendashboard').onclick = function () {
-        var sessionid = txtSessionId.value;
-        if (sessionid && sessionid.length) {
-            console.log("send command opendashboard " + sessionid);
-            ipc.send("opendashboard", { sessionid: sessionid });
-        }
-    };
-
-    var txtProxyTarget = document.getElementById('vorlonproxytarget');
-    document.getElementById('btnopenproxy').onclick = function () {
-        var targeturl = txtProxyTarget.value;
-        if (targeturl && targeturl.length) {
-            console.log("request data for proxying " + targeturl);
-            getProxyData(targeturl, function (data) {
-                console.log(data);
-                if (data) {
-                    ipc.send("opendashboard", { sessionid: data.session });
-                    setTimeout(function () {
-                        shell.openExternal(data.url);
-                    }, 500);
-                }
-            });
-        }
-    };
-
-    ipc.send('getVorlonStatus');
-    errorscontainer = document.getElementById('vorlonerrors');
-    messagescontainer = document.getElementById('vorlonmessages');
-    statusText = document.getElementById('vorlonServerStatus');
-    btnStart = document.getElementById('btnStartServer');
-    btnStart.onclick = function () {
-        ipc.send("startVorlon");
-    }
-    btnStop = document.getElementById('btnStopServer');
-    btnStop.onclick = function () {
-        ipc.send("stopVorlon");
-    }
+    var panelHome = document.getElementById("panelHome");
+    loadPanelContent("./app.home.html", panelHome, function(){
+        console.log("panel home loaded");
+        homepanel = new HomePanel(panelHome);
+        ipc.send('getVorlonStatus');
+    });
+    
+    var panelConsole = document.getElementById("panelConsole");
+    loadPanelContent("./app.console.html", panelConsole, function(){
+        console.log("panel console loaded");
+        consolepanel = new ConsolePanel(panelConsole);
+    });
+    
+    var panelConfig = document.getElementById("panelConfig");
+    loadPanelContent("./app.settings.html", panelConfig, function(){
+        console.log("panel console loaded");
+        settingspanel = new SettingsPanel(panelConfig);
+    });
+    
+    var panelInfo = document.getElementById("panelInfo");
+    loadPanelContent("./app.info.html", panelInfo, function(){
+        console.log("panel console loaded");
+        infopanel = new SettingsPanel(panelInfo);
+    });
     
     $("#menubar").on("click", ".icon", function(arg){
         $("#menubar .icon.selected").removeClass("selected");
@@ -69,66 +58,20 @@ document.addEventListener('DOMContentLoaded', function () {
         $(this).addClass("selected");
         $("#"+ panel).addClass("selected");
     });
-});
-
-ipc.on("vorlonStatus", function (args) {
-    console.log("receive status", args);
-    if (statusText) {
-        if (args.running) {
-            statusText.innerHTML = "VORLON server is running";
-            btnStart.style.display = "none";
-            btnStop.style.display = "";
-        } else {
-            statusText.innerHTML = "VORLON server is NOT running";
-            btnStart.style.display = "";
-            btnStop.style.display = "none";
-        }
-
-        if (args.errors && args.errors.length) {
-            errorscontainer.innerHTML = "";
-            args.errors.forEach(function (err) {
-                var e = document.createElement("DIV");
-                e.className = "error";
-                e.innerText = JSON.stringify(err.args);
-                errorscontainer.appendChild(e);
-            })
-        } else {
-            errorscontainer.innerHTML = "no errors";
-        }
-
-        if (args.messages && args.messages.length) {
-            messagescontainer.innerHTML = "";
-            args.messages.forEach(function (log) {
-                appendLog(log);
-            })
-        } else {
-            messagescontainer.innerHTML = "";
-        }
-    }
-});
-
-ipc.on("vorlonlog", function (args) {
-    if (args.logs) {
-        args.logs.forEach(function (log) {
-            appendLog(log);
-        });
-    }
+    
 });
 
 
-function appendLog(log) {
-    var e = document.createElement("DIV");
-    e.className = "log log-" + log.level;
-    e.innerText = JSON.stringify(log.args);
-    messagescontainer.insertBefore(e, messagescontainer.firstChild);
-}
 
-function getProxyData(url, callback) {
+
+function loadPanelContent(url, panelElement, callback) {
     $.ajax({
         type: "GET",
-        url: "http://localhost:1337/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
+        url: url,
         success: function (data) {
-            callback(JSON.parse(data));
+            //console.log(data);
+            panelElement.innerHTML = data;
+            callback(panelElement);
         },
     });
 }
