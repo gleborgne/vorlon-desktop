@@ -15,56 +15,56 @@ if (!global.setImmediate) {
 	}
 }
 
-process.send({ message: "starting..." });
-
 try {
 	var context = new servercontext.VORLON.DefaultContext();
 	//context.logger = new servercontext.VORLON.SimpleConsoleLogger();
 
 	context.logger = {
 		debug: function () {
-			process.send({ message: arguments });
-			//console.log.apply(null, arguments);
+			var args = Array.prototype.slice.call(arguments);
+			process.send({ log: { level: "debug", args: args, origin: 'logger.debug'} });
 		},
 		info: function () {
-			process.send({ message: arguments });
-			//console.log.apply(null, arguments);
+			var args = Array.prototype.slice.call(arguments);
+			process.send({ log: { level: "info", args: args, origin: 'logger.info'} });
 		},
 		warn: function () {
-			process.send({ error: { err: arguments, origin: 'console.warn'} });
-			//console.log.apply(null, arguments);
+			var args = Array.prototype.slice.call(arguments);
+
+			process.send({ log: { level: "warn", args: args, origin: 'logger.warn'} });
 		},
 		error: function () {
-			process.send({ error: { err: arguments, origin: 'console.error'} });
-			//console.log.apply(null, arguments);
+			var args = Array.prototype.slice.call(arguments);
+			process.send({ log: { level: "error", args: args, origin: 'logger.error'} });
 		},
 	};
 
-	context.logger.debug("electron building vorlon server");
+	//context.logger.debug("electron building vorlon server");
 	var webServer = new vorlonWebserver.VORLON.WebServer(context);
-	context.logger.debug("webserver ok");
+	//context.logger.debug("webserver ok");
 	var dashboard = new vorlonDashboard.VORLON.Dashboard(context);
-	context.logger.debug("dashboard ok");
+	//context.logger.debug("dashboard ok");
 	var server = new vorlonServer.VORLON.Server(context);
-	context.logger.debug("server ok");
+	//context.logger.debug("server ok");
 	var HttpProxy = new vorlonHttpProxy.VORLON.HttpProxy(context, false);
-	context.logger.debug("proxy ok");
+	//context.logger.debug("proxy ok");
 	
 	webServer.components.push(dashboard);
 	webServer.components.push(server);
 	webServer.components.push(HttpProxy);
 
-	context.logger.debug("electron starting vorlon server");
+	//context.logger.debug("electron starting vorlon server");
 	webServer.start();
 	webServer._app.use(function logErrors(err, req, res, next) {
 		if (err) {
-			process.send({ error: { message: "express catched error", err: err, stack: err.stack } });
+			process.send({ log: { level: "error", args: err.stack, origin: 'logger.error'} });
 		}
 		next(err);
 	});
-	context.logger.debug("electron vorlon server ready");
+	//context.logger.debug("electron vorlon server ready");
 } catch (exception) {
-	process.send({ error: { err : exception, origin: 'trycatch', stack : exception.stack} });
+	process.send({ log: { level: "error", args: [exception.stack], origin: 'trycatch'} });
+	//process.send({ error: { err : exception, origin: 'trycatch', stack : exception.stack} });
 	//console.error("VORLONERROR " + exception);
 }
 

@@ -5,7 +5,7 @@
 // are required the same way as always.
 var os = require('os');
 var ipc = require('ipc');
-var jquery = require('jquery');
+var $ = require('jquery');
 var app = require('remote').require('app');
 var jetpack = require('fs-jetpack').cwd(app.getAppPath());
 var shell = require('shell');
@@ -16,7 +16,7 @@ console.log(jetpack.read('package.json', 'json'));
 
 // window.env contains data from config/env_XXX.json file.
 var envName = "DEV";
-var statusText = null, btnStart = null, btnStop = null, errorscontainer=null, messagescontainer=null;
+var statusText = null, btnStart = null, btnStop = null, errorscontainer = null, messagescontainer = null;
 
 if (window.env) {
     envName = window.env.name;
@@ -54,18 +54,26 @@ document.addEventListener('DOMContentLoaded', function () {
     messagescontainer = document.getElementById('vorlonmessages');
     statusText = document.getElementById('vorlonServerStatus');
     btnStart = document.getElementById('btnStartServer');
-    btnStart.onclick = function(){
+    btnStart.onclick = function () {
         ipc.send("startVorlon");
     }
     btnStop = document.getElementById('btnStopServer');
-    btnStop.onclick = function(){
+    btnStop.onclick = function () {
         ipc.send("stopVorlon");
     }
+    
+    $("#menubar").on("click", ".icon", function(arg){
+        $("#menubar .icon.selected").removeClass("selected");
+        $(".panel.selected").removeClass("selected");
+        var panel = $(this).attr("targetpanel");
+        $(this).addClass("selected");
+        $("#"+ panel).addClass("selected");
+    });
 });
 
 ipc.on("vorlonStatus", function (args) {
     console.log("receive status", args);
-    if (statusText){
+    if (statusText) {
         if (args.running) {
             statusText.innerHTML = "VORLON server is running";
             btnStart.style.display = "none";
@@ -75,32 +83,45 @@ ipc.on("vorlonStatus", function (args) {
             btnStart.style.display = "";
             btnStop.style.display = "none";
         }
-        
-        if (args.errors && args.errors.length){
+
+        if (args.errors && args.errors.length) {
             errorscontainer.innerHTML = "";
-            args.errors.forEach(function(err){
+            args.errors.forEach(function (err) {
                 var e = document.createElement("DIV");
-                e.className  ="error";
-                e.innerText = JSON.stringify(err);
+                e.className = "error";
+                e.innerText = JSON.stringify(err.args);
                 errorscontainer.appendChild(e);
             })
-        }else{
-            errorscontainer.innerHTML = "no errors";   
+        } else {
+            errorscontainer.innerHTML = "no errors";
         }
-        
-        if (args.messages && args.messages.length){
+
+        if (args.messages && args.messages.length) {
             messagescontainer.innerHTML = "";
-            args.messages.forEach(function(err){
-                var e = document.createElement("DIV");
-                e.className  ="error";
-                e.innerText = JSON.stringify(err);
-                messagescontainer.appendChild(e);
+            args.messages.forEach(function (log) {
+                appendLog(log);
             })
-        }else{
-            messagescontainer.innerHTML = "no message";   
+        } else {
+            messagescontainer.innerHTML = "";
         }
     }
-})
+});
+
+ipc.on("vorlonlog", function (args) {
+    if (args.logs) {
+        args.logs.forEach(function (log) {
+            appendLog(log);
+        });
+    }
+});
+
+
+function appendLog(log) {
+    var e = document.createElement("DIV");
+    e.className = "log log-" + log.level;
+    e.innerText = JSON.stringify(log.args);
+    messagescontainer.insertBefore(e, messagescontainer.firstChild);
+}
 
 function getProxyData(url, callback) {
     jquery.ajax({

@@ -112,6 +112,15 @@ function sendVorlonStatus(event, arg){
     }
 }
 
+function sendLog(logs, sender){
+    var msg = {logs : logs};
+    if (sender){
+        sender.send('vorlonlog', msg);
+    }else{
+        mainWindow.send('vorlonlog', msg);
+    }
+}
+
 function openDashboardWindow(sessionid) {
     sessionid = sessionid || 'default';
     var dashboardwdw = new BrowserWindow({
@@ -159,11 +168,13 @@ function startVorlonProcess() {
         });
 
         vorlon.on('message', function (m) {
-            if (m.message){
-                messages.push(m.message)
-            }
-            if (m.error){
-                errors.push(m.error);
+            if (m.log){
+                messages.push(m.log);
+                if (m.level == "error"){
+                    errors.push(m.log);
+                }
+                console.log.apply(null, m.log.args);
+                sendLog([m.log]);
             }
             //console.log("message:", m);
         });
