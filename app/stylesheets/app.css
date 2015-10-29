@@ -19,6 +19,14 @@ h6 {
   font-family: Oswald;
   color: #411748;
 }
+button {
+  background-color: #6b2d81;
+  border: none;
+  padding: 0.4em 1em;
+  color: white;
+  cursor: pointer;
+  text-transform: uppercase;
+}
 .mainpage {
   background-color: #AAA;
   width: 100%;
@@ -80,40 +88,40 @@ h6 {
   transform: translate(0, 0);
   z-index: 1;
 }
-.mainpage .pagecontainer .pagecontainer-panels .content {
-  padding: 40px;
-  box-sizing: border-box;
+.mainpage .pagecontainer .pagecontainer-panels .panel.with-header {
   display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: center;
+  flex-flow: column nowrap;
+  overflow: hidden;
 }
-.mainpage .pagecontainer .pagecontainer-panels .content .contentbloc {
-  margin: 10px;
+.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > header {
+  flex-shrink: 0;
+  height: 40px;
+  background-color: #6b2d81;
+  color: white;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 0 20px;
+}
+.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > header .title {
+  flex: 1;
+  text-transform: uppercase;
+}
+.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > header .actions {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > section {
   padding: 20px;
-  box-sizing: border-box;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > section .contentbloc {
   background-color: white;
   border: 1px solid #AAA;
-  width: 400px;
-  max-width: 100%;
-  height: 220px;
-}
-.mainpage .pagecontainer .pagecontainer-panels .content .contentbloc input,
-.mainpage .pagecontainer .pagecontainer-panels .content .contentbloc button {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-.mainpage .pagecontainer .pagecontainer-panels .content .contentbloc button {
-  margin-top: 10px;
-  background-color: #6b2d81;
-  border: none;
-  padding: 0.4em 1em;
-  color: white;
-  cursor: pointer;
-}
-.mainpage .pagecontainer .pagecontainer-panels .content .fullsize-bloc {
-  width: 100%;
+  padding: 20px;
 }
 .subtitle {
   color: gray;
@@ -172,12 +180,6 @@ h6 {
 }
 #panelHome .content .contentbloc button {
   margin-top: 10px;
-  background-color: #6b2d81;
-  border: none;
-  padding: 0.4em 1em;
-  color: white;
-  cursor: pointer;
-  text-transform: uppercase;
 }
 #panelHome .content .fullsize-bloc {
   width: 100%;
@@ -535,9 +537,6 @@ h6 {
     right: 10px;
   }
 }
-#panelConsole .console-items {
-  padding: 20px;
-}
 #panelConsole .console-items .log {
   padding: 5px 10px;
   background-color: white;
@@ -556,9 +555,9 @@ h6 {
 #panelConsole .console-items .log.log-error .dripicon {
   color: darkred;
 }
-#panelConfig {
-  color: black;
-}
-#panelInfo {
-  padding: 40px;
+#panelConfig section .contentbloc label {
+  display: block;
+  font-size: 0.6em;
+  text-transform: uppercase;
+  color: #777;
 }

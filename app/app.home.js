@@ -3,6 +3,8 @@ var ipc = require('ipc');
 var $ = require('jquery');
 var app = require('remote').require('app');
 var shell = require('shell');
+var config = require("./vorlon.config.js");
+var userDataPath = app.getPath('userData');
 
 function HomePanel(element) {
     var panel = this;
@@ -43,10 +45,11 @@ function HomePanel(element) {
     }
 
     ipc.on("vorlonStatus", function (args) {
+        var cfg = config.getConfig(userDataPath);
         console.log("receive status", args);
         if (panel.statusText) {
             if (args.running) {
-                panel.statusText.innerHTML = "VORLON server is running";
+                panel.statusText.innerHTML = "VORLON server is running on port " + cfg.port;
                 panel.btnStart.style.display = "none";
                 panel.btnStop.style.display = "";
             } else {
@@ -61,10 +64,15 @@ function HomePanel(element) {
 module.exports.HomePanel = HomePanel;
 
 function getProxyData(url, callback) {
+    var cfg = config.getConfig(userDataPath);
+    var url = "http://localhost:" + cfg.port + "/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date();
+    
     $.ajax({
         type: "GET",
-        url: "http://localhost:1337/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
+        url: url,
         success: function (data) {
+            console.log('proxy targets');
+            console.log(data);
             callback(JSON.parse(data));
         },
     });

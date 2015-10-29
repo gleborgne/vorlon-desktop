@@ -9,6 +9,9 @@ var $ = require('jquery');
 var app = require('remote').require('app');
 var jetpack = require('fs-jetpack').cwd(app.getAppPath());
 var shell = require('shell');
+
+var config = require("./vorlon.config.js");
+var userDataPath = app.getPath('userData');
 var HomePanel = require('./app.home.js').HomePanel;
 var ConsolePanel = require('./app.console.js').ConsolePanel;
 var SettingsPanel = require('./app.settings.js').SettingsPanel;
@@ -48,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var panelInfo = document.getElementById("panelInfo");
     loadPanelContent("./app.info.html", panelInfo, function(){
         console.log("panel console loaded");
-        infopanel = new SettingsPanel(panelInfo);
+        infopanel = new InfoPanel(panelInfo);
     });
     
     $("#menubar").on("click", ".icon", function(arg){
@@ -59,6 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
         $("#"+ panel).addClass("selected");
     });
     
+    var cfg = config.getConfig(userDataPath);
+    $(".vorlonscriptsample").text("http://" + os.hostname() + ":" + cfg.port + "/vorlon.js");
 });
 
 

@@ -24,12 +24,6 @@
 }
 #panelHome .content .contentbloc button {
   margin-top: 10px;
-  background-color: #6b2d81;
-  border: none;
-  padding: 0.4em 1em;
-  color: white;
-  cursor: pointer;
-  text-transform: uppercase;
 }
 #panelHome .content .fullsize-bloc {
   width: 100%;

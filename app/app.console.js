@@ -42,6 +42,14 @@ ConsolePanel.prototype.appendLog = function (log) {
 }
 
 ConsolePanel.prototype.appendLogEntry = function (level, logtext, indent) {
+	if (!logtext)
+		return;
+		
+	if (!(typeof logtext == "string")){
+		console.log(JSON.stringify(logtext));
+		return;
+	}
+	
     var e = document.createElement("DIV");
     e.className = "log log-" + level + " " + (indent ? "indent" : "");
 	var icon = document.createElement("I");

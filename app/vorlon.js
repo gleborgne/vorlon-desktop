@@ -1,9 +1,11 @@
+var http = require("http");
+
 var vorlonhttpConfig = require("./vorlon/config/vorlon.httpconfig");
 var vorlonServer = require("./vorlon/Scripts/vorlon.server");
 var vorlonDashboard = require("./vorlon/Scripts/vorlon.dashboard");
 var vorlonWebserver = require("./vorlon/Scripts/vorlon.webServer");
 var vorlonHttpProxy = require("./vorlon/Scripts/vorlon.httpproxy.server");
-var config = new vorlonhttpConfig.VORLON.HttpConfig();
+var config = require("./vorlon.config.js");
 var servercontext = require("./vorlon/config/vorlon.servercontext");
 
 //console.log("STARTING VORLON FROM ELECTRON");
@@ -16,56 +18,53 @@ if (!global.setImmediate) {
 }
 
 try {
-	var context = new servercontext.VORLON.DefaultContext();
-	//context.logger = new servercontext.VORLON.SimpleConsoleLogger();
-
-	context.logger = {
+	var logger = {
 		debug: function () {
 			var args = Array.prototype.slice.call(arguments);
-			process.send({ log: { level: "debug", args: args, origin: 'logger.debug'} });
+			process.send({ log: { level: "debug", args: args, origin: 'logger.debug' } });
 		},
 		info: function () {
 			var args = Array.prototype.slice.call(arguments);
-			process.send({ log: { level: "info", args: args, origin: 'logger.info'} });
+			process.send({ log: { level: "info", args: args, origin: 'logger.info' } });
 		},
 		warn: function () {
 			var args = Array.prototype.slice.call(arguments);
 
-			process.send({ log: { level: "warn", args: args, origin: 'logger.warn'} });
+			process.send({ log: { level: "warn", args: args, origin: 'logger.warn' } });
 		},
 		error: function () {
 			var args = Array.prototype.slice.call(arguments);
-			process.send({ log: { level: "error", args: args, origin: 'logger.error'} });
+			process.send({ log: { level: "error", args: args, origin: 'logger.error' } });
 		},
 	};
 
-	//context.logger.debug("electron building vorlon server");
+	var userdatapath = process.argv[2];
+	var vorlonconfig = config.getConfig(userdatapath);
+	var context = new servercontext.VORLON.DefaultContext();
+
+	vorlonconfig.httpModule = http;
+	vorlonconfig.protocol = "http";
+	context.httpConfig = vorlonconfig;
+	context.baseURLConfig = vorlonconfig;
+
+	context.logger = logger;
+
 	var webServer = new vorlonWebserver.VORLON.WebServer(context);
-	//context.logger.debug("webserver ok");
 	var dashboard = new vorlonDashboard.VORLON.Dashboard(context);
-	//context.logger.debug("dashboard ok");
 	var server = new vorlonServer.VORLON.Server(context);
-	//context.logger.debug("server ok");
 	var HttpProxy = new vorlonHttpProxy.VORLON.HttpProxy(context, false);
-	//context.logger.debug("proxy ok");
-	
+
 	webServer.components.push(dashboard);
 	webServer.components.push(server);
 	webServer.components.push(HttpProxy);
 
-	//context.logger.debug("electron starting vorlon server");
 	webServer.start();
 	webServer._app.use(function logErrors(err, req, res, next) {
 		if (err) {
-			process.send({ log: { level: "error", args: err.stack, origin: 'logger.error'} });
+			process.send({ log: { level: "error", args: err.stack, origin: 'logger.error' } });
 		}
 		next(err);
 	});
-	//context.logger.debug("electron vorlon server ready");
 } catch (exception) {
-	process.send({ log: { level: "error", args: [exception.stack], origin: 'trycatch'} });
-	//process.send({ error: { err : exception, origin: 'trycatch', stack : exception.stack} });
-	//console.error("VORLONERROR " + exception);
+	process.send({ log: { level: "error", args: [exception.stack], origin: 'trycatch' } });
 }
-
-//throw new Error("oulala");

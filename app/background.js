@@ -22,17 +22,19 @@ var vorlonServer = require("./vorlon/Scripts/vorlon.server");
 var vorlonDashboard = require("./vorlon/Scripts/vorlon.dashboard");
 var vorlonWebserver = require("./vorlon/Scripts/vorlon.webServer");
 var vorlonHttpProxy = require("./vorlon/Scripts/vorlon.httpproxy.server");
-var config = new vorlonhttpConfig.VORLON.HttpConfig();
+var config = require("./vorlon.config.js");
 
 var mainWindow;
 var vorlonServerProcess = null;
 var dashboardWindows = [];
 var errors = [];
 var messages = [];
+var userDataPath = app.getPath('userData');
+console.log("user data path : " + userDataPath);
 
 // Preserver of the window size and position between app launches.
 var mainWindowState = windowStateKeeper('main', {
-    width: 1000,
+    width: 800,
     height: 600
 });
 
@@ -104,10 +106,10 @@ function sendVorlonStatus(event, arg){
     };
     
     if (event){
-        console.log("sending status", msg);
+        //console.log("sending status", msg);
         event.sender.send('vorlonStatus', msg);
     }else{
-        console.log("sending status to mainwindow", msg);
+        //console.log("sending status to mainwindow", msg);
         mainWindow.send('vorlonStatus', msg);
     }
 }
@@ -131,11 +133,11 @@ function openDashboardWindow(sessionid) {
         "node-integration": false
     });
     console.log("create dashboard window for " + sessionid);
-    
+    var cfg = config.getConfig(userDataPath);
     //load empty page first to prevent bad window title
     dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
     setTimeout(function () {
-        dashboardwdw.loadUrl('http://localhost:1337/dashboard/' + sessionid);
+        dashboardwdw.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);
     }, 500);
 
     dashboardWindows.push(dashboardwdw);
@@ -156,16 +158,12 @@ function startVorlonProcess() {
     if (!vorlonServerProcess) {
         var scriptpath = path.join(__dirname, 'vorlon.js');
         console.log("starting silent " + scriptpath);
-        var vorlon = childProcess.fork(scriptpath, [], { silent: true });
+        var vorlon = childProcess.fork(scriptpath, [userDataPath], { silent: true });
         //var vorlon = childProcess.spawn('node', [scriptpath], {});
         errors = [];
         messages = [];
         
         vorlonServerProcess = vorlon;
-        vorlon.on('error', function (data) {
-            errors.push(data);
-            console.log('stderr: ' + data);
-        });
 
         vorlon.on('message', function (m) {
             if (m.log){
@@ -179,14 +177,11 @@ function startVorlonProcess() {
             //console.log("message:", m);
         });
 
-        vorlon.on('data', function (m) {
-            console.log("data: " + m);
-        });
-
         vorlon.on('close', function (code, arg) {            
             console.log("VORLON CLOSED WITH CODE " + code, arg);
             stopVorlonProcess();
         });
+        
         sendVorlonStatus();
     }
 }
