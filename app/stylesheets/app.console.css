@@ -1,3 +1,21 @@
-#panelConsole {
-  color: black;
+#panelConsole .console-items {
+  padding: 20px;
+}
+#panelConsole .console-items .log {
+  padding: 5px 10px;
+  background-color: white;
+  border: 1px solid #CCC;
+  margin-bottom: 2px;
+}
+#panelConsole .console-items .log .dripicon {
+  margin-right: 10px;
+}
+#panelConsole .console-items .log.log-info .dripicon {
+  color: dodgerblue;
+}
+#panelConsole .console-items .log.log-warn .dripicon {
+  color: darkgoldenrod;
+}
+#panelConsole .console-items .log.log-error .dripicon {
+  color: darkred;
 }
