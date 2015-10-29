@@ -33,25 +33,28 @@ document.addEventListener('DOMContentLoaded', function () {
     loadPanelContent("./app.home.html", panelHome, function(){
         console.log("panel home loaded");
         homepanel = new HomePanel(panelHome);
+        
+    }).then(function(){    
+        var panelConsole = document.getElementById("panelConsole");
+        return loadPanelContent("./app.console.html", panelConsole, function(){
+            console.log("panel console loaded");
+            consolepanel = new ConsolePanel(panelConsole);
+            
+        });
+    }).then(function(){
         ipc.send('getVorlonStatus');
-    });
-    
-    var panelConsole = document.getElementById("panelConsole");
-    loadPanelContent("./app.console.html", panelConsole, function(){
-        console.log("panel console loaded");
-        consolepanel = new ConsolePanel(panelConsole);
-    });
-    
-    var panelConfig = document.getElementById("panelConfig");
-    loadPanelContent("./app.settings.html", panelConfig, function(){
-        console.log("panel console loaded");
-        settingspanel = new SettingsPanel(panelConfig);
-    });
-    
-    var panelInfo = document.getElementById("panelInfo");
-    loadPanelContent("./app.info.html", panelInfo, function(){
-        console.log("panel console loaded");
-        infopanel = new InfoPanel(panelInfo);
+    }).then(function(){    
+        var panelConfig = document.getElementById("panelConfig");
+        return loadPanelContent("./app.settings.html", panelConfig, function(){
+            console.log("panel console loaded");
+            settingspanel = new SettingsPanel(panelConfig);
+        });
+    }).then(function(){
+        var panelInfo = document.getElementById("panelInfo");
+        loadPanelContent("./app.info.html", panelInfo, function(){
+            console.log("panel console loaded");
+            infopanel = new InfoPanel(panelInfo);
+        });
     });
     
     $("#menubar").on("click", ".icon", function(arg){
@@ -66,11 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
     $(".vorlonscriptsample").text("http://" + os.hostname() + ":" + cfg.port + "/vorlon.js");
 });
 
-
-
-
 function loadPanelContent(url, panelElement, callback) {
-    $.ajax({
+    return $.ajax({
         type: "GET",
         url: url,
         success: function (data) {
