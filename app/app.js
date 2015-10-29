@@ -124,7 +124,7 @@ function appendLog(log) {
 }
 
 function getProxyData(url, callback) {
-    jquery.ajax({
+    $.ajax({
         type: "GET",
         url: "http://localhost:1337/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date(),
         success: function (data) {
