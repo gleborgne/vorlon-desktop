@@ -22,7 +22,7 @@ var paths = {
         './fonts/**',        
         './vorlon/**',
         './**/*.html',
-        './vorlon.js'
+        './*.js'
     ],
 }
 
