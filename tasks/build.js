@@ -22,6 +22,8 @@ var paths = {
         './fonts/**',        
         './vorlon/**',
         './**/*.html',
+        './screens/**/*.js',
+        './screens/**/*.html',
         './*.js'
     ],
 }
