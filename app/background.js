@@ -98,6 +98,12 @@ ipc.on("getVorlonStatus", function (event, arg) {
     sendVorlonStatus(event, arg);
 });
 
+ipc.on("getVorlonSessions", function (event, arg) {
+    if (vorlonServerProcess){
+        vorlonServerProcess.send({ message: "getsessions" });
+    }
+});
+
 function sendVorlonStatus(event, arg){
     var msg = {
         running : vorlonServerProcess != null,
@@ -173,6 +179,9 @@ function startVorlonProcess() {
                 }
                 console.log.apply(null, m.log.args);
                 sendLog([m.log]);
+            } else if (m.session){
+                console.log("session " + m.session.action, m.session.session);
+                mainWindow.send("session." + m.session.action, m.session.session);
             }
             //console.log("message:", m);
         });
@@ -181,6 +190,8 @@ function startVorlonProcess() {
             console.log("VORLON CLOSED WITH CODE " + code, arg);
             stopVorlonProcess();
         });
+        
+        
         
         sendVorlonStatus();
     }

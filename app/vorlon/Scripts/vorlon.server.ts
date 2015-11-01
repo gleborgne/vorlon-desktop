@@ -75,6 +75,7 @@ export module VORLON {
                             nbClients++;
                         }
                     }
+                    this._sessions.update(req.params.idSession, session);
                     this._log.debug("API : GetClients nb client " + nbClients + " in session " + req.params.idSession, { type: "API", session: req.params.idSession });
                 }
                 else {

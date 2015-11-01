@@ -166,32 +166,59 @@
 				position : relative;
 				width:100%;
 				height: 100%;
-			}
-			.toolbar{
 				display: flex;
-				align-items: center;
-				background-color : #AAA;
-				padding : 4px 8px;
-				box-sizing: border-box;
-				width:100%;
-				height: 40px;
-				.stretch{
+				flex-flow: column nowrap;
+				
+				.sessionslist{
 					flex:1;
+					padding : 10px;
+					box-sizing: border-box;
+					overflow-x : hidden;
+					overflow-y: auto;
+					
+					.session-item {
+						padding : 5px 10px;
+						background-color: #EEE;
+					}	
+				}
+				
+				.toolbar{
+					display: flex;
+					align-items: center;
+					background-color : #AAA;
+					padding : 4px 8px;
+					box-sizing: border-box;
+					width:100%;
+					color: white;
+					
+					.stretch{
+						flex:1;
+					}
+					
+					&.addsession{
+						background-color : transparent;
+						// border-bottom : 1px solid #DDD;
+					}
+				}
+				
+				
+				
+				.actions{
+					margin-left:10px;
+					button{
+						width : 32px;
+						height: 32px;
+						line-height: 27px;
+						border-radius: 50%;
+						padding : 0;
+						text-align: center;
+						font-size: 12pt;
+						background-color: #777;
+					}
 				}
 			}
 			
-			.actions{
-				button{
-					width : 32px;
-					height: 32px;
-					line-height: 27px;
-					border-radius: 50%;
-					padding : 0;
-					text-align: center;
-					font-size: 12pt;
-					background-color: #777;
-				}
-			}
+			
 		}
 		
 		.content{

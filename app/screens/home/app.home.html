@@ -22,7 +22,7 @@
     <div class="satellite"></div>
 </header>
 <section>
-    <div class="sessionspanel">
+    <div id="sessionspanel" class="sessionspanel">
         <div class="sessionspanelcontent">
             <div class="vorlonstatus toolbar">
                 <div id="vorlonServerStatus" class="stretch">
@@ -33,6 +33,14 @@
                     <button id="btnStopServer" style="display:none"><i class="dripicon dripicon-media-stop"></i></button>
                 </div>
             </div>
+            <div class="addsession toolbar">
+                <input type="text" placeholder="add a new session config" id="txtnewsession" class="stretch"/>
+                <div class="actions">
+                    <button id="btnAddSession"><i class="dripicon dripicon-plus"></i></button>
+                </div>
+            </div>
+            <div class="sessionslist" id="sessionslist"></div>
+            
         </div>
     </div>
     <div class="content">

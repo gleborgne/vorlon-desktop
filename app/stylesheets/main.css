@@ -34,7 +34,7 @@ button {
   overflow: hidden;
   position: relative;
 }
-.mainpage .toolbar {
+.mainpage > .toolbar {
   position: absolute;
   left: 0;
   top: 0;
@@ -43,13 +43,13 @@ button {
   background-color: #411748;
   color: white;
 }
-.mainpage .toolbar .icon {
+.mainpage > .toolbar .icon {
   width: 60px;
   height: 60px;
   text-align: center;
   cursor: pointer;
 }
-.mainpage .toolbar .icon i {
+.mainpage > .toolbar .icon i {
   font-size: 18pt;
   line-height: 60px;
 }

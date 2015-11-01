@@ -42,6 +42,18 @@ try {
 	var vorlonconfig = config.getConfig(userdatapath);
 	var context = new servercontext.VORLON.DefaultContext();
 
+	context.sessions.onsessionadded = function (session) {
+		process.send({ session: { action: "added", session: session } });
+	}
+
+	context.sessions.onsessionremoved = function (session) {
+		process.send({ session: { action: "removed", session: session } });
+	}
+
+	context.sessions.onsessionupdated = function (session) {
+		process.send({ session: { action: "updated", session: session } });
+	}
+	context.sessions.logger = logger;
 	vorlonconfig.httpModule = http;
 	vorlonconfig.protocol = "http";
 	context.httpConfig = vorlonconfig;
@@ -65,6 +77,11 @@ try {
 		}
 		next(err);
 	});
+	
+	process.on("message", function(args){
+		process.send({ session: { action: "init", session: context.sessions.all() } });
+	});
+	
 } catch (exception) {
 	process.send({ log: { level: "error", args: [exception.stack], origin: 'trycatch' } });
 }

@@ -138,20 +138,39 @@
   position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
 }
-#panelHome > section .sessionspanel .toolbar {
+#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist {
+  flex: 1;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item {
+  padding: 5px 10px;
+  background-color: #EEE;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .toolbar {
   display: flex;
   align-items: center;
   background-color: #AAA;
   padding: 4px 8px;
   box-sizing: border-box;
   width: 100%;
-  height: 40px;
+  color: white;
 }
-#panelHome > section .sessionspanel .toolbar .stretch {
+#panelHome > section .sessionspanel .sessionspanelcontent .toolbar .stretch {
   flex: 1;
 }
-#panelHome > section .sessionspanel .actions button {
+#panelHome > section .sessionspanel .sessionspanelcontent .toolbar.addsession {
+  background-color: transparent;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .actions {
+  margin-left: 10px;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .actions button {
   width: 32px;
   height: 32px;
   line-height: 27px;

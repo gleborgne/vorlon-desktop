@@ -4,11 +4,16 @@ var $ = require('jquery');
 var app = require('remote').require('app');
 var shell = require('shell');
 var config = require("../../vorlon.config.js");
+var SessionsManager = require("./app.home.sessionsmgr.js").SessionsManager;
 var userDataPath = app.getPath('userData');
 
 function HomePanel(element) {
     var panel = this;
+    var sessionspanel = document.getElementById('sessionspanel');
+    var sessionsManager = new SessionsManager(sessionspanel);
+    
     var txtSessionId = document.getElementById('vorlonsessionid');
+    
     document.getElementById('btnopendashboard').onclick = function () {
         var sessionid = txtSessionId.value;
         if (sessionid && sessionid.length) {
