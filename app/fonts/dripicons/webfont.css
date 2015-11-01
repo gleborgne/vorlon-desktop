@@ -13,6 +13,20 @@
 
 }
 
+.dripicon{
+  font-family: "dripicons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none !important;
+  speak: none;
+  display: inline-block;
+  text-decoration: none;
+  width: 1em;
+  line-height: 1em;
+  -webkit-font-smoothing: antialiased;
+}
+
 [data-dripicon]:before {
   font-family: "dripicons";
   content: attr(data-dripicon);
