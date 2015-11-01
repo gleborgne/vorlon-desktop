@@ -10,11 +10,12 @@ var VORLON;
             var configurationString = configurationFile.toString().replace(/^\uFEFF/, '');
             var configuration = JSON.parse(configurationString);
             var sessionConfig = configuration.sessions[sessionid];
-            if (!sessionConfig)
+            if (!sessionConfig || !sessionConfig.plugins || !sessionConfig.plugins.length) {
                 sessionConfig = {
                     includeSocketIO: configuration.includeSocketIO,
                     plugins: configuration.plugins
                 };
+            }
             if (callback)
                 callback(null, sessionConfig);
         };
