@@ -339,11 +339,11 @@
 }
 .plugin-dom .treeNodeHeader .opentag {
   /*content: "<";*/
-  color: #bbbbbb;
+  color: #BBB;
 }
 .plugin-dom .treeNodeHeader .closetag {
   /*content: ">";*/
-  color: #bbbbbb;
+  color: #BBB;
 }
 .plugin-dom .nodeContentContainer {
   padding-left: 20px;
@@ -405,7 +405,7 @@
   padding-left: 0;
 }
 .plugin-dom .nodeTextContent {
-  color: #111111;
+  color: #111;
 }
 .plugin-dom .nodeTextContent.nodeComment {
   color: #3fa83f;
@@ -421,10 +421,10 @@
   cursor: pointer;
 }
 .plugin-dom .treeNodeClosingText .openclosingtag {
-  color: #bbbbbb;
+  color: #BBB;
 }
 .plugin-dom .treeNodeClosingText .closetag {
-  color: #bbbbbb;
+  color: #BBB;
 }
 .plugin-dom .nodeName {
   color: #6b2d81;

@@ -14,7 +14,7 @@ var VORLON;
             DashboardManager.ClientList = {};
             DashboardManager.StartListeningServer();
             DashboardManager.GetClients();
-            DashboardManager.CatalogUrl = vorlonBaseURL + "/config.json";
+            DashboardManager.CatalogUrl = vorlonBaseURL + "/getplugins/" + sessionid;
         }
         DashboardManager.StartListeningServer = function (clientid) {
             if (clientid === void 0) { clientid = ""; }

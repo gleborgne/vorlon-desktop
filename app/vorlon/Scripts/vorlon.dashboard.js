@@ -7,6 +7,7 @@ var VORLON;
     var Dashboard = (function () {
         function Dashboard(context) {
             this.baseURLConfig = context.baseURLConfig;
+            this._log = context.logger;
         }
         Dashboard.prototype.addRoutes = function (app, passport) {
             app.route(this.baseURLConfig.baseURL + '/').get(vauth.VORLON.Authentication.ensureAuthenticated, this.defaultDashboard());
@@ -41,7 +42,7 @@ var VORLON;
                 if (catalog.activateAuth) {
                     authent = catalog.activateAuth;
                 }
-                
+                _this._log.debug("authenticated " + authent);
                 res.render('dashboard', { baseURL: _this.baseURLConfig.baseURL, title: 'Dashboard', sessionid: req.params.sessionid, clientid: "", authenticated: authent });
             };
         };

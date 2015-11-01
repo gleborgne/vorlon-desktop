@@ -97,7 +97,7 @@
 }
 .ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-string,
 .ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-string {
-  color: #333333;
+  color: #333;
 }
 .ng-inspector-container .scopes-tree-wrapper ul.scope-properties .ng-property.ng-property-string .ng-property-value:before,
 .ng-inspector-container .scope-details-wrapper ul.scope-properties .ng-property.ng-property-string .ng-property-value:before,
