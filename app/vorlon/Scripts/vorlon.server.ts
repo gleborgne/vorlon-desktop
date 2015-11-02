@@ -347,7 +347,7 @@ export module VORLON {
                                 this._log.debug(formatLog("PLUGIN", "NOT sending RefreshClients, no Dashboard " + socket.id, receiveMessage));
                             }
                             this._log.debug(formatLog("PLUGIN", "Client Close " + socket.id, receiveMessage));
-                        }
+                        }                                               
                     }
                     this._sessions.update(session.sessionId, session);
                 });

@@ -154,8 +154,18 @@
   margin-bottom: 4px;
   display: flex;
 }
+#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .status {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #AAA;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .status.status-up {
+  background-color: seagreen;
+}
 #panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .title {
   flex: 1;
+  margin-left: 4px;
 }
 #panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .dripicon {
   margin-left: 10px;
