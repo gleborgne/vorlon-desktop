@@ -67,7 +67,7 @@ button {
   height: 100%;
   overflow: hidden;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel {
+.mainpage .pagecontainer .pagecontainer-panels > .panel {
   background-color: #DDD;
   position: absolute;
   left: 0;
@@ -82,18 +82,18 @@ button {
   transition: opacity 140ms ease-out, transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 0;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.selected {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.selected {
   opacity: 1;
   -webkit-transform: translate(0, 0);
   transform: translate(0, 0);
   z-index: 1;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.with-header {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.with-header {
   display: flex;
   flex-flow: column nowrap;
   overflow: hidden;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > header {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.with-header > header {
   flex-shrink: 0;
   height: 40px;
   background-color: #6b2d81;
@@ -103,22 +103,22 @@ button {
   align-items: center;
   padding: 0 20px;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > header .title {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.with-header > header .title {
   flex: 1;
   text-transform: uppercase;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > header .actions {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.with-header > header .actions {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > section {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.with-header > section {
   padding: 20px;
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
 }
-.mainpage .pagecontainer .pagecontainer-panels .panel.with-header > section .contentbloc {
+.mainpage .pagecontainer .pagecontainer-panels > .panel.with-header > section .contentbloc {
   background-color: white;
   border: 1px solid #AAA;
   padding: 20px;

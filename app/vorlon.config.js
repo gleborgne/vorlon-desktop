@@ -26,3 +26,7 @@ module.exports.resetConfig = function(path){
     var userDataDir = jetpack.cwd(path);
     userDataDir.write(stateStoreFile, vorlonOriginalConfig, { atomic: true });
 }
+
+module.exports.availablePlugins = function(){
+    return JSON.parse(JSON.stringify({ includeSocketIO : vorlonOriginalConfig.includeSocketIO, plugins : vorlonOriginalConfig.plugins }));
+}

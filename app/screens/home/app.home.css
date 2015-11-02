@@ -132,48 +132,60 @@
   top: 0;
   right: 0;
   bottom: 0;
-  background-color: white;
 }
 #panelHome > section .sessionspanel .sessionspanelcontent {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-flow: column nowrap;
+  background-color: white;
+  transition: transform 200ms ease-out;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel.away {
+  transform: translate(-100%, 0);
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .stretch {
   flex: 1;
   padding: 8px;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .stretch .session-item {
   padding: 4px 8px;
   background-color: #EEE;
   margin-bottom: 4px;
   display: flex;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .status {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .stretch .session-item .status {
   width: 16px;
   height: 16px;
   border-radius: 50%;
   border: 1px solid #AAA;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .status.status-up {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .stretch .session-item .status.status-up {
   background-color: seagreen;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .title {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .stretch .session-item .title {
   flex: 1;
   margin-left: 4px;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .dripicon {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .stretch .session-item .dripicon {
   margin-left: 10px;
   color: #AAA;
   font-size: 14pt;
   cursor: pointer;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .toolbar {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .toolbar {
   display: flex;
   align-items: center;
   background-color: #AAA;
@@ -182,24 +194,29 @@
   width: 100%;
   color: white;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .toolbar .stretch {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .toolbar .stretch {
   flex: 1;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .toolbar.addsession {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .toolbar.addsession {
   background-color: transparent;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .actions {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .actions {
   margin-left: 10px;
 }
-#panelHome > section .sessionspanel .sessionspanelcontent .actions button {
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .actions button {
   width: 32px;
   height: 32px;
-  line-height: 27px;
+  line-height: 29px;
   border-radius: 50%;
-  padding: 0;
+  padding: 2px;
   text-align: center;
   font-size: 12pt;
   background-color: #777;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .panel .configcommons {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #CCC;
 }
 #panelHome > section .content {
   overflow-x: hidden;
