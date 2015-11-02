@@ -49,7 +49,10 @@ SessionsManager.prototype.addSession = function(session){
 	
 	var elt = document.createElement("DIV");
 	elt.className = "session-item";
-	elt.innerHTML = '<div class="status status-down"></div><div class="title">' + session.sessionId + '</div><div class="clientcount"></div><div class="opendashboard dripicon dripicon-export"></div><div class="opensettings dripicon dripicon-gear"></div>';
+	elt.innerHTML = '<div class="status status-down"></div><div class="title">' + session.sessionId + '</div><div class="clientcount"></div>'+
+	    '<div class="opendashboard dripicon dripicon-export"></div>' +
+		'<div class="opensettings dripicon dripicon-gear"></div>'+
+		'<div class="opensettings dripicon dripicon-trash"></div>';
 	mgr.sessionsList.appendChild(elt);
 	mgr.sessions[session.sessionId] = {
 		element : elt,
