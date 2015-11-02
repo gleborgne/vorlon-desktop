@@ -58,6 +58,7 @@ var VORLON;
                             nbClients++;
                         }
                     }
+                    _this._sessions.update(req.params.idSession, session);
                     _this._log.debug("API : GetClients nb client " + nbClients + " in session " + req.params.idSession, { type: "API", session: req.params.idSession });
                 }
                 else {

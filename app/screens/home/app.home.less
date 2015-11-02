@@ -171,14 +171,27 @@
 				
 				.sessionslist{
 					flex:1;
-					padding : 10px;
+					padding : 8px;
 					box-sizing: border-box;
 					overflow-x : hidden;
 					overflow-y: auto;
 					
 					.session-item {
-						padding : 5px 10px;
+						padding : 4px 8px;
 						background-color: #EEE;
+						margin-bottom : 4px;
+						display: flex;
+						
+						.title{
+							flex:1;
+						}
+						
+						.dripicon{
+							margin-left: 10px;
+							color: #777;
+							font-size: 14pt;
+							cursor : pointer;
+						}
 					}	
 				}
 				
@@ -201,8 +214,6 @@
 					}
 				}
 				
-				
-				
 				.actions{
 					margin-left:10px;
 					button{
@@ -217,8 +228,6 @@
 					}
 				}
 			}
-			
-			
 		}
 		
 		.content{

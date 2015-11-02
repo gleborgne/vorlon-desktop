@@ -124,7 +124,7 @@ function sendLog(logs, sender){
     var msg = {logs : logs};
     if (sender){
         sender.send('vorlonlog', msg);
-    }else{
+    }else if (mainWindow) {
         mainWindow.send('vorlonlog', msg);
     }
 }

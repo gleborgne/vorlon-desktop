@@ -31,6 +31,8 @@ var VORLON;
         SessionManager.prototype.add = function (sessionId, session) {
             session.sessionId = sessionId;
             this.sessions[sessionId] = session;
+            if (this.logger)
+                this.logger.debug("session " + sessionId + " added");
             if (this.onsessionadded)
                 this.onsessionadded(session);
         };
@@ -39,12 +41,16 @@ var VORLON;
         };
         SessionManager.prototype.remove = function (sessionId) {
             var session = this.sessions[sessionId];
+            if (this.logger)
+                this.logger.debug("session " + sessionId + " removed");
             delete this.sessions[sessionId];
             if (this.onsessionremoved)
                 this.onsessionremoved(session);
         };
         SessionManager.prototype.update = function (sessionId, session) {
             this.sessions[sessionId] = session;
+            if (this.logger)
+                this.logger.debug("session " + sessionId + " update");
             if (this.onsessionupdated)
                 this.onsessionupdated(session);
         };

@@ -299,14 +299,25 @@ button {
 }
 #panelHome > section .sessionspanel .sessionspanelcontent .sessionslist {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
 }
 #panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item {
-  padding: 5px 10px;
+  padding: 4px 8px;
   background-color: #EEE;
+  margin-bottom: 4px;
+  display: flex;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .title {
+  flex: 1;
+}
+#panelHome > section .sessionspanel .sessionspanelcontent .sessionslist .session-item .dripicon {
+  margin-left: 10px;
+  color: #777;
+  font-size: 14pt;
+  cursor: pointer;
 }
 #panelHome > section .sessionspanel .sessionspanelcontent .toolbar {
   display: flex;

@@ -79,7 +79,7 @@ var VORLON;
                     _this._log.info('Vorlon.js PROXY listening on port ' + _this._server.get('port'));
                 });
             }
-            this._proxy.on("error", this.proxyError);
+            this._proxy.on("error", this.proxyError.bind(this));
             this._proxy.on("proxyRes", this.proxyResult.bind(this));
             this._proxy.on("proxyReq", this.proxyRequest.bind(this));
             this._fetchproxy.on("proxyReq", this.proxyFetchRequest.bind(this));
