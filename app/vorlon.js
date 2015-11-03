@@ -53,6 +53,16 @@ try {
 	context.sessions.onsessionupdated = function (session) {
 		process.send({ session: { action: "updated", session: session } });
 	}
+	
+	context.plugins = {
+		getPluginsFor : function(sessionid, callback) { // (error, plugins: ISessionPlugins) => void)
+			var plugins = config.getSessionConfig(userdatapath, sessionid);
+			logger.debug("get plugins from local for " + sessionid);
+			if (callback)
+				callback(null, plugins);
+		}
+	}
+	
 	context.sessions.logger = logger;
 	vorlonconfig.httpModule = http;
 	vorlonconfig.protocol = "http";

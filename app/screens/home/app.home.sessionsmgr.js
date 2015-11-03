@@ -7,6 +7,7 @@ var config = require("../../vorlon.config.js");
 var userDataPath = app.getPath('userData');
 var config = require("../../vorlon.config.js");
 
+
 function SessionsManager(element) {
 	var mgr = this;
 	this.sessions = {};
@@ -125,12 +126,13 @@ SessionsManager.prototype.showConfig = function (session) {
 	var pluginscontainer = mgr.sessionconfigpanel.querySelector('#sessionsplugins');
 	pluginscontainer.innerHTML = '';
 
-	var pluginsConfig = config.availablePlugins();
+	var pluginsConfig = config.getSessionConfig(userDataPath, session.sessionId);
 	pluginsConfig.plugins.sort(function (a, b) {
 		return a.name.localeCompare(b.name);
 	});
 	
 	mgr.currentSessionConfig = pluginsConfig;
+	mgr.currentSessionId = session.sessionId;
 	
 	var includeSocketIO = mgr.sessionconfigpanel.querySelector('#includeSocketIO');
 	includeSocketIO.checked = pluginsConfig.includeSocketIO;
@@ -158,6 +160,8 @@ SessionsManager.prototype.closeConfig = function () {
 
 SessionsManager.prototype.saveConfig = function () {
 	var mgr = this;
+	console.log(mgr.currentSessionConfig);
+	config.saveSessionConfig(userDataPath, mgr.currentSessionId, mgr.currentSessionConfig);
 	mgr.closeConfig();
 }
 

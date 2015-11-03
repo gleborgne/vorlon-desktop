@@ -78,7 +78,7 @@ app.on('window-all-closed', function () {
 });
 
 ipc.on("opendashboard", function (event, arg) {
-    console.log("receive opendashboard for " + arg);
+    console.log("receive opendashboard for " + JSON.stringify(arg));
     if (arg && arg.sessionid) {
         openDashboardWindow(arg.sessionid);
     }
