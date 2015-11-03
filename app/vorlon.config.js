@@ -32,6 +32,13 @@ module.exports.availablePlugins = function(){
     return JSON.parse(JSON.stringify({ includeSocketIO : vorlonOriginalConfig.includeSocketIO, plugins : vorlonOriginalConfig.plugins }));
 }
 
+module.exports.getSessions = function(configpath){
+    var userDataDir = jetpack.cwd(configpath);
+    var config = userDataDir.read(sessionConfigsStoreFile, 'json') || {};
+          
+    return config;
+}
+
 module.exports.getSessionConfig = function(configpath, sessionid){
     var defaultConfig = JSON.parse(JSON.stringify({ includeSocketIO : vorlonOriginalConfig.includeSocketIO, plugins : vorlonOriginalConfig.plugins }));
     
@@ -42,7 +49,6 @@ module.exports.getSessionConfig = function(configpath, sessionid){
         return defaultConfig
     
     var sessionConfig = config[sessionid];
-    
     //todo merge default & stored config to ensure plugins availability
       
     return sessionConfig;

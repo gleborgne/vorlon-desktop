@@ -22,7 +22,30 @@ function SessionsManager(element) {
 
 	ipc.on("session.init", function (args) {
 		console.log("init sessions", args);
+		mgr.sessionsList.innerHTML = '';
+		mgr.sessions = {};
+		var sessions = [];
+		var sessionsKeys = {}
 		args.forEach(function (session) {
+			sessions.push(session);
+			sessionsKeys[session.sessionId] = true;
+		});
+		
+		var storedsessions = config.getSessions(userDataPath);
+		for(var n in storedsessions){
+			if (!sessionsKeys[n]){
+				sessions.push({
+					sessionId : n,
+					nbClients : -1
+				});
+			}
+		}
+		
+		sessions.sort(function(a,b){
+			return a.sessionId.localeCompare(b.sessionId);
+		});
+		
+		sessions.forEach(function (session) {
 			mgr.addSession(session);
 			mgr.updateSession(session);
 		});
@@ -41,10 +64,10 @@ function SessionsManager(element) {
         mgr.updateSession(args);
     });
 
-	ipc.send("getVorlonSessions");
+	mgr.refresh();
 
 	this.btnCloseConfig.onclick = function () {
-		mgr.closeConfig();
+		mgr.closeConfig(false);
 	}
 
 	this.btnSaveConfig.onclick = function () {
@@ -56,11 +79,29 @@ function SessionsManager(element) {
 	}
 	
 	this.btnAddSession.onclick= function(){
-		alert("not implemented yet...")
+		var sessionid = mgr.txtAddSession.value;
+		if (sessionid && sessionid.length > 2){
+			var session = {
+				sessionId : sessionid,
+				nbClients : -1
+			};
+			mgr.sessions[sessionid] = session;
+			mgr.showConfig(session);
+			mgr.currentSessionCallback = function(success){
+				if (!success){
+					delete mgr.sessions[sessionid];
+				}
+				
+				mgr.refresh();
+			}
+		}
 	}
 }
 
 module.exports.SessionsManager = SessionsManager;
+SessionsManager.prototype.refresh = function(){
+	ipc.send("getVorlonSessions");
+}
 
 SessionsManager.prototype.addSession = function (session) {
 	var mgr = this;
@@ -159,9 +200,15 @@ SessionsManager.prototype.showConfig = function (session) {
 	});
 }
 
-SessionsManager.prototype.closeConfig = function () {
+SessionsManager.prototype.closeConfig = function (success) {
 	var mgr = this;
 	mgr.sessionconfigpanel.classList.add('away');
+	if (mgr.currentSessionCallback){
+		mgr.currentSessionCallback(success);
+	}
+	mgr.currentSessionConfig = null;
+	mgr.currentSessionId = null;
+	mgr.currentSessionCallback = null;
 }
 
 SessionsManager.prototype.saveConfig = function () {
@@ -169,7 +216,7 @@ SessionsManager.prototype.saveConfig = function () {
 	console.log(mgr.currentSessionConfig);
 	mgr.sessions[mgr.currentSessionId].fromConfig = true;
 	config.saveSessionConfig(userDataPath, mgr.currentSessionId, mgr.currentSessionConfig);
-	mgr.closeConfig();
+	mgr.closeConfig(true);
 	ipc.send("updateSession", { sessionid: mgr.currentSessionId });
 }
 
@@ -178,7 +225,8 @@ SessionsManager.prototype.removeConfig = function () {
 	if (confirm("Do you really want to remove configuration for "+ mgr.currentSessionId)){
 		mgr.sessions[mgr.currentSessionId].fromConfig = false;
 		config.removeSessionConfig(userDataPath, mgr.currentSessionId);
-		mgr.closeConfig();
+		mgr.closeConfig(false);
 		ipc.send("updateSession", { sessionid: mgr.currentSessionId });
+		mgr.refresh();
 	}
 }
