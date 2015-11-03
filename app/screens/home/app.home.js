@@ -11,10 +11,21 @@ function HomePanel(element) {
     var panel = this;
     var sessionspanel = document.getElementById('sessionspanel');
     var sessionsManager = new SessionsManager(sessionspanel);
-    
+
+    var btnopendashboard = document.getElementById('btnopendashboard');
     var txtSessionId = document.getElementById('vorlonsessionid');
+    txtSessionId.onkeypress = function (e) {
+        var key = e.which ? e.which : e.keyCode;
+        if (key == 13) {
+            txtSessionId.blur();
+            e.preventDefault();
+            e.stopPropagation();
+            btnopendashboard.focus();
+            btnopendashboard.click();
+        }
+    };
     
-    document.getElementById('btnopendashboard').onclick = function () {
+    btnopendashboard.onclick = function () {
         var sessionid = txtSessionId.value;
         if (sessionid && sessionid.length) {
             console.log("send command opendashboard " + sessionid);
@@ -23,7 +34,19 @@ function HomePanel(element) {
     };
 
     var txtProxyTarget = document.getElementById('vorlonproxytarget');
-    document.getElementById('btnopenproxy').onclick = function () {
+    var btnopenproxy = document.getElementById('btnopenproxy');
+    txtProxyTarget.onkeypress = function (e) {
+        var key = e.which ? e.which : e.keyCode;
+        if (key == 13) {
+            txtProxyTarget.blur();
+            e.preventDefault();
+            e.stopPropagation();
+            btnopenproxy.focus();
+            btnopenproxy.click();
+        }
+    };
+    
+    btnopenproxy.onclick = function () {
         var targeturl = txtProxyTarget.value;
         if (targeturl && targeturl.length) {
             console.log("request data for proxying " + targeturl);
@@ -38,14 +61,14 @@ function HomePanel(element) {
             });
         }
     };
-    
+
     this.statusText = document.getElementById('vorlonServerStatus');
-    
+
     this.btnStart = document.getElementById('btnStartServer');
     this.btnStart.onclick = function () {
         ipc.send("startVorlon");
     }
-    
+
     this.btnStop = document.getElementById('btnStopServer');
     this.btnStop.onclick = function () {
         ipc.send("stopVorlon");
@@ -73,7 +96,7 @@ module.exports.HomePanel = HomePanel;
 function getProxyData(url, callback) {
     var cfg = config.getConfig(userDataPath);
     var url = "http://localhost:" + cfg.port + "/httpproxy/inject?url=" + encodeURIComponent(url) + "&ts=" + new Date();
-    
+
     $.ajax({
         type: "GET",
         url: url,

@@ -6,11 +6,8 @@ improve console screen
 	add filtering
 
 improve sessions
-	display configured sessions
 	add reload btn
 	merge configured by checking available plugins
-	add session
 info screen
 home
 	responsive
-	manage "enter" key on textbox
