@@ -54,6 +54,10 @@ function SessionsManager(element) {
 	this.btnRemoveConfig.onclick = function () {
 		mgr.removeConfig();
 	}
+	
+	this.btnAddSession.onclick= function(){
+		alert("not implemented yet...")
+	}
 }
 
 module.exports.SessionsManager = SessionsManager;
@@ -69,8 +73,9 @@ SessionsManager.prototype.addSession = function (session) {
 	elt.className = "session-item";
 	elt.innerHTML = '<div class="status status-down"></div><div class="title">' + session.sessionId + '</div><div class="clientcount"></div>' +
 	'<div class="opendashboard dripicon dripicon-export"></div>' +
-	'<div class="opensettings dripicon dripicon-gear"></div>' +
-	'<div class="bloatsession dripicon dripicon-trash"></div>';
+	'<div class="opensettings dripicon dripicon-gear"></div>';
+	//'<div class="bloatsession dripicon dripicon-trash"></div>';
+	
 	mgr.sessionsList.appendChild(elt);
 	mgr.sessions[session.sessionId] = {
 		element: elt,
@@ -127,9 +132,10 @@ SessionsManager.prototype.showConfig = function (session) {
 	pluginscontainer.innerHTML = '';
 
 	var pluginsConfig = config.getSessionConfig(userDataPath, session.sessionId);
-	pluginsConfig.plugins.sort(function (a, b) {
-		return a.name.localeCompare(b.name);
-	});
+	
+	// pluginsConfig.plugins.sort(function (a, b) {
+	// 	return a.name.localeCompare(b.name);
+	// });
 	
 	mgr.currentSessionConfig = pluginsConfig;
 	mgr.currentSessionId = session.sessionId;
@@ -161,11 +167,18 @@ SessionsManager.prototype.closeConfig = function () {
 SessionsManager.prototype.saveConfig = function () {
 	var mgr = this;
 	console.log(mgr.currentSessionConfig);
+	mgr.sessions[mgr.currentSessionId].fromConfig = true;
 	config.saveSessionConfig(userDataPath, mgr.currentSessionId, mgr.currentSessionConfig);
 	mgr.closeConfig();
+	ipc.send("updateSession", { sessionid: mgr.currentSessionId });
 }
 
 SessionsManager.prototype.removeConfig = function () {
 	var mgr = this;
-	mgr.closeConfig();
+	if (confirm("Do you really want to remove configuration for "+ mgr.currentSessionId)){
+		mgr.sessions[mgr.currentSessionId].fromConfig = false;
+		config.removeSessionConfig(userDataPath, mgr.currentSessionId);
+		mgr.closeConfig();
+		ipc.send("updateSession", { sessionid: mgr.currentSessionId });
+	}
 }

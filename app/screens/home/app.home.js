@@ -40,10 +40,12 @@ function HomePanel(element) {
     };
     
     this.statusText = document.getElementById('vorlonServerStatus');
+    
     this.btnStart = document.getElementById('btnStartServer');
     this.btnStart.onclick = function () {
         ipc.send("startVorlon");
     }
+    
     this.btnStop = document.getElementById('btnStopServer');
     this.btnStop.onclick = function () {
         ipc.send("stopVorlon");

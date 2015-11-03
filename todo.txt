@@ -1,0 +1,16 @@
+move sources to typescript
+user-select
+
+improve console screen
+	make a buffer with max size
+	add filtering
+
+improve sessions
+	display configured sessions
+	add reload btn
+	merge configured by checking available plugins
+	add session
+info screen
+home
+	responsive
+	manage "enter" key on textbox

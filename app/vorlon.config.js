@@ -55,3 +55,11 @@ module.exports.saveSessionConfig = function (path, sessionid, config) {
       
     userDataDir.write(sessionConfigsStoreFile, storedconfig, { atomic: true });
 };
+
+module.exports.removeSessionConfig = function (path, sessionid) {
+    var userDataDir = jetpack.cwd(path);  
+    var storedconfig = userDataDir.read(sessionConfigsStoreFile, 'json') || {};
+    delete storedconfig[sessionid];
+      
+    userDataDir.write(sessionConfigsStoreFile, storedconfig, { atomic: true });
+};

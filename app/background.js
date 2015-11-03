@@ -26,7 +26,7 @@ var config = require("./vorlon.config.js");
 
 var mainWindow;
 var vorlonServerProcess = null;
-var dashboardWindows = [];
+var dashboardWindows = {};
 var errors = [];
 var messages = [];
 var userDataPath = app.getPath('userData');
@@ -64,6 +64,7 @@ app.on('ready', function () {
 
     mainWindow.on('close', function () {
         mainWindowState.saveState(mainWindow);
+        app.quit();
     });
 
     startVorlonProcess();
@@ -104,6 +105,14 @@ ipc.on("getVorlonSessions", function (event, arg) {
     }
 });
 
+ipc.on("updateSession", function (event, arg) {
+    console.log("received updateSession", arg);
+    var dashboardwindow = dashboardWindows[arg.sessionid];
+    if (dashboardwindow){
+        openDashboardWindow(arg.sessionid)
+    }
+});
+
 function sendVorlonStatus(event, arg){
     var msg = {
         running : vorlonServerProcess != null,
@@ -131,6 +140,15 @@ function sendLog(logs, sender){
 
 function openDashboardWindow(sessionid) {
     sessionid = sessionid || 'default';
+    
+    var cfg = config.getConfig(userDataPath);
+    var existing = dashboardWindows[sessionid];
+    if (existing){
+        existing.show();    
+        existing.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);
+        return ;
+    }
+    
     var dashboardwdw = new BrowserWindow({
         x: mainWindowState.x,
         y: mainWindowState.y,
@@ -138,25 +156,27 @@ function openDashboardWindow(sessionid) {
         height: mainWindowState.height,
         "node-integration": false
     });
+    
+    
     console.log("create dashboard window for " + sessionid);
-    var cfg = config.getConfig(userDataPath);
     //load empty page first to prevent bad window title
     dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
     setTimeout(function () {
         dashboardwdw.loadUrl('http://localhost:' + cfg.port + '/dashboard/' + sessionid);
-    }, 500);
+        setTimeout(function () {
+        dashboardwdw.setTitle("Vorlon.js - " + sessionid);
+        },400);
+    }, 100);
 
-    dashboardWindows.push(dashboardwdw);
+    dashboardWindows[sessionid] = dashboardwdw;
     dashboardwdw.on('close', function () {
-        var idx = dashboardWindows.indexOf(dashboardwdw);
-        if (idx) {
-            dashboardWindows.splice(idx, 1);
-        }
+        dashboardWindows[sessionid] = null;
     });
     
     dashboardwdw.webContents.on('did-fail-load', function(event, errorCode,  errorDescription, validateUrl){
         console.log("dashboard page error " + validateUrl + " " + errorCode + " " + errorDescription);
         dashboardwdw.loadUrl('file://' + __dirname + '/emptypage.html');
+        
     });
 }
 
