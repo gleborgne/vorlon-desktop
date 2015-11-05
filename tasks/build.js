@@ -158,4 +158,4 @@ gulp.task('dev-watch', function () {
 
 gulp.task('build', ['bundle', 'less', 'copy', 'finalize']);
 
-gulp.task('devbuild', ['dev-less']);
+gulp.task('devbuild', ['dev-less','typescript-to-js']);

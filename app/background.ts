@@ -11,9 +11,9 @@ var kill = require('tree-kill');
 var path = require('path');
 
 var BrowserWindow = require('browser-window');
-var env = require('./vendor/electron_boilerplate/env_config');
-var devHelper = require('./vendor/electron_boilerplate/dev_helper');
-var windowStateKeeper = require('./vendor/electron_boilerplate/window_state');
+var env = require('./scripts/env_config');
+var devHelper = require('./scripts/dev_helper');
+var windowStateKeeper = require('./scripts/window_state');
 
 
 
