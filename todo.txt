@@ -11,3 +11,5 @@ improve sessions
 info screen
 home
 	responsive
+	
+dashboard load error => dedicated page

@@ -6,6 +6,7 @@ var gulp = require('gulp');
 var rollup = require('rollup');
 var less = require('gulp-less');
 var jetpack = require('fs-jetpack');
+var typescript = require('gulp-typescript');
 
 var utils = require('./utils');
 var generateSpecsImportFile = require('./generate_specs_import');
@@ -75,7 +76,7 @@ var bundle = function (src, dest) {
 var bundleApplication = function () {
     return Q.all([
         bundle(srcDir.path('background.js'), destDir.path('background.js')),
-        bundle(srcDir.path('app.js'), destDir.path('app.js')),
+        bundle(srcDir.path('mainpage.js'), destDir.path('mainpage.js')),
     ]);
 };
 
@@ -97,6 +98,13 @@ var bundleTask = function () {
 gulp.task('bundle', ['clean'], bundleTask);
 gulp.task('bundle-watch', bundleTask);
 
+gulp.task('typescript-to-js', function() {
+  var tsResult = gulp.src(['./app/**/*.ts', '!./node_modules', '!./node_modules/**'], { base: './' })
+                      .pipe(typescript({ noExternalResolve: true, target: 'ES5', module: 'commonjs' }));
+
+  return tsResult.js
+            .pipe(gulp.dest('.'));
+});
 
 var lessTask = function () {
     return gulp.src(['app/**/*.less'])
@@ -143,6 +151,7 @@ gulp.task('watch', function () {
 gulp.task('dev-watch', function () {
     //gulp.watch('app/**/*.js', ['bundle-watch']);
     //gulp.watch(paths.copyFromAppDir, { cwd: 'app' }, ['copy-watch']);
+    gulp.watch(['./app/**/*.ts', '!./node_modules', '!./node_modules/**'], ['typescript-to-js']);
     gulp.watch('app/**/*.less', ['dev-less']);
 });
 

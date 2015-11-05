@@ -1,74 +1,59 @@
-// Here is the starting point for code of your own application.
-// All stuff below is just to show you how it works. You can delete all of it.
-
-// Node.js modules and those from npm
-// are required the same way as always.
 var os = require('os');
 var ipc = require('ipc');
 var $ = require('jquery');
 var app = require('remote').require('app');
 var jetpack = require('fs-jetpack').cwd(app.getAppPath());
 var shell = require('shell');
-
-var config = require("./vorlon.config.js");
+var config = require("./vorlon.config");
+var app_home_1 = require('./screens/home/app.home');
+var app_console_1 = require('./screens/console/app.console');
+var app_settings_1 = require('./screens/settings/app.settings');
+var app_info_1 = require('./screens/info/app.info');
 var userDataPath = app.getPath('userData');
-var HomePanel = require('./screens/home/app.home.js').HomePanel;
-var ConsolePanel = require('./screens/console/app.console.js').ConsolePanel;
-var SettingsPanel = require('./screens/settings/app.settings.js').SettingsPanel;
-var InfoPanel = require('./screens/info/app.info.js').InfoPanel;
 var homepanel = null, consolepanel = null, settingspanel = null, infopanel = null;
-// Holy crap! This is browser window with HTML and stuff, but I can read
-// here files like it is node.js! Welcome to Electron world :)
 console.log(jetpack.read('package.json', 'json'));
-
 // window.env contains data from config/env_XXX.json file.
 var envName = "DEV";
-
-if (window.env) {
-    envName = window.env.name;
+var env = window.env;
+if (env) {
+    envName = env.name;
 }
-
 document.addEventListener('DOMContentLoaded', function () {
     var panelHome = document.getElementById("panelHome");
-    loadPanelContent("./screens/home/app.home.html", panelHome, function(){
+    loadPanelContent("./screens/home/app.home.html", panelHome, function () {
         console.log("panel home loaded");
-        homepanel = new HomePanel(panelHome);
-        
-    }).then(function(){    
+        homepanel = new app_home_1.HomePanel(panelHome);
+    }).then(function () {
         var panelConsole = document.getElementById("panelConsole");
-        return loadPanelContent("./screens/console/app.console.html", panelConsole, function(){
+        return loadPanelContent("./screens/console/app.console.html", panelConsole, function () {
             console.log("panel console loaded");
-            consolepanel = new ConsolePanel(panelConsole);
-            
+            consolepanel = new app_console_1.ConsolePanel(panelConsole);
         });
-    }).then(function(){
+    }).then(function () {
         ipc.send('getVorlonStatus');
-    }).then(function(){    
+    }).then(function () {
         var panelConfig = document.getElementById("panelConfig");
-        return loadPanelContent("./screens/settings/app.settings.html", panelConfig, function(){
+        return loadPanelContent("./screens/settings/app.settings.html", panelConfig, function () {
             console.log("panel console loaded");
-            settingspanel = new SettingsPanel(panelConfig);
+            settingspanel = new app_settings_1.SettingsPanel(panelConfig);
         });
-    }).then(function(){
+    }).then(function () {
         var panelInfo = document.getElementById("panelInfo");
-        loadPanelContent("./screens/info/app.info.html", panelInfo, function(){
+        loadPanelContent("./screens/info/app.info.html", panelInfo, function () {
             console.log("panel console loaded");
-            infopanel = new InfoPanel(panelInfo);
+            infopanel = new app_info_1.InfoPanel(panelInfo);
         });
     });
-    
-    $("#menubar").on("click", ".icon", function(arg){
+    $("#menubar").on("click", ".icon", function (arg) {
         $("#menubar .icon.selected").removeClass("selected");
         $(".panel.selected").removeClass("selected");
         var panel = $(this).attr("targetpanel");
         $(this).addClass("selected");
-        $("#"+ panel).addClass("selected");
+        $("#" + panel).addClass("selected");
     });
-    
     var cfg = config.getConfig(userDataPath);
     $(".vorlonscriptsample").text("http://" + os.hostname() + ":" + cfg.port + "/vorlon.js");
 });
-
 function loadPanelContent(url, panelElement, callback) {
     return $.ajax({
         type: "GET",

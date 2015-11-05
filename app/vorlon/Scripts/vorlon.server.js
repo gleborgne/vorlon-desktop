@@ -300,6 +300,7 @@ var VORLON;
                             _this._log.debug(formatLog("PLUGIN", "Client Close " + socket.id, receiveMessage));
                         }
                     }
+                    _this._sessions.update(session.sessionId, session);
                 });
             });
         };
@@ -344,6 +345,9 @@ var VORLON;
                 }
                 else {
                     _this._log.debug(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                    if (session != undefined) {
+                        _this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
             socket.on("reload", function (message) {
@@ -373,6 +377,9 @@ var VORLON;
                 }
                 else {
                     _this._log.debug(formatLog("DASHBOARD", "No client selected for this dashboard"));
+                    if (session != undefined) {
+                        _this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
             socket.on("protocol", function (message) {
@@ -408,6 +415,9 @@ var VORLON;
                 }
                 else {
                     _this._log.error(formatLog("DASHBOARD", " No client to identify...", receiveMessage));
+                    if (session != undefined) {
+                        _this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
             socket.on("message", function (message) {
@@ -426,6 +436,10 @@ var VORLON;
                 }
                 else {
                     _this._log.error(formatLog("DASHBOARD", "No client for message", receiveMessage));
+                    var session = _this._sessions.get(metadata.sessionId);
+                    if (session != undefined) {
+                        _this._sessions.update(metadata.sessionId, session);
+                    }
                 }
             });
             socket.on("disconnect", function (message) {
